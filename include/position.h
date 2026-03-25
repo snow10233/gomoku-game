@@ -13,7 +13,7 @@ public:
 
   bool setX(const int &xPos);
 
-  bool getY(const int &yPos);
+  bool setY(const int &yPos);
 
   void setXLimit(const int &left, const int &right);
 

@@ -5,5 +5,5 @@ const int boardSize = 15;
 
 int main() {
   Board b1 = {15};
-  cout << "test" << endl;
+  cout << b1 << endl;
 }
