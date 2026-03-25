@@ -1,3 +1,25 @@
 {
+    "clangd.arguments": [
+        "--all-scopes-completion",
+        "--background-index",
+        "--clang-tidy",
+        "--compile-commands-dir=${workspaceFolder}/build",
+        "--completion-parse=always",
+        "--completion-style=detailed",
+        "--fallback-style=google",
+        "--function-arg-placeholders=0",
+        "--header-insertion=never",
+        "--pch-storage=memory",
+        "--import-insertions",
+        "--enable-config"
+    ],
+    "[c]": {
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "[cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "editor.formatOnSave": true,
+    "C_Cpp.intelliSenseEngine": "disabled",
     "C_Cpp.default.compilerPath": "/usr/bin/g++"
 }
