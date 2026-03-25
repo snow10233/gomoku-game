@@ -12,7 +12,7 @@ bool Position::setX(const int &xPos) {
   return false;
 }
 
-bool Position::getY(const int &yPos) {
+bool Position::setY(const int &yPos) {
   if (yLeftLimit <= yPos && yPos <= yRightLimit) {
     y = yPos;
     return true;

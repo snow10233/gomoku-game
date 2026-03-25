@@ -1,15 +1,36 @@
 #include "board.h"
 
-bool Board::isWhoPlayNow() const { return whoPlay; }
+Chess Board::isWhoPlayNow() const { return whoPlay; }
 
 bool Board::putChess(const int &xPos, const int &yPos) { return true; }
 
-std::ostream &operator<<(std::ostream &os, const dualCharVector &board) {
-  for (std::vector<char> line : board) {
-    for (char c : line) {
-      os << board;
+void Board::resetBoard() {
+  for (std::vector<Chess> &line : this->board) {
+    for (Chess &c : line) {
+      c = Chess::EMPTY;
+    }
+  }
+}
+
+bool Board::isChessPositionVaild() const { return true; }
+
+std::ostream &operator<<(std::ostream &os, const Board &b) {
+  for (const std::vector<Chess> &line : b.board) {
+    for (const Chess &c : line) {
+      os << c;
     }
     os << std::endl;
+  }
+  return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const Chess &c) {
+  if (c == Chess::BLACK) {
+    os << 'B';
+  } else if (c == Chess::WHITE) {
+    os << 'W';
+  } else {
+    os << '*';
   }
   return os;
 }
