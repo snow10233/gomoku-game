@@ -1,0 +1,32 @@
+name: Matrix Project CI
+
+# 什麼時候觸發？當 master 有 push 或 PR 時
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    # 使用 GitHub 提供的最新版 Ubuntu 虛擬機
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. 把你的程式碼從 GitHub 倉庫「下載」到這台虛擬機上
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. 安裝 C++ 編譯器 (Ubuntu 通常內建了，保險起見確認一下)
+    - name: Set up GCC
+      run: sudo apt-get update && sudo apt-get install -y g++
+
+    # 3. 編譯程式碼 (這裡要對應你的檔案路徑)
+    # 假設你的 main.cpp 和 matrix.cpp 都在 linear_algubra 資料夾下
+    - name: Compile Matrix project
+      run: |
+        g++ -std=c++11 linear_algubra/*.cpp -o matrix_test
+
+    # 4. 執行程式碼並看看排版結果
+    - name: Run Matrix test
+      run: ./matrix_test
