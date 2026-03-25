@@ -1,36 +1,59 @@
 #include "board.h"
 
-Chess Board::isWhoPlayNow() const { return whoPlay; }
+ChessPiece Board::isWhoPlayNow() const { return whoPlay; }
 
-bool Board::putChess(const int &xPos, const int &yPos) { return true; }
+bool Board::putChess(const int &xPosition, const int &yPosition) {
+  if (isChessPositionVaild(xPosition, yPosition)) {
+    board[yPosition][xPosition] = whoPlay;
+    this->lastlyChess.setPosition(xPosition, yPosition);
+    if (whoPlay == ChessPiece::BLACK) {
+      whoPlay = ChessPiece::WHITE;
+    } else {
+      whoPlay = ChessPiece::BLACK;
+    }
+    return true;
+  }
+  return false;
+}
+
+bool Board::isChessPositionVaild(const int &xPosition,
+                                 const int &yPosition) const {
+  return this->lastlyChess.isXVaild(xPosition) &&
+         this->lastlyChess.isYVaild(yPosition) &&
+         board[yPosition][xPosition] == ChessPiece::EMPTY;
+}
 
 void Board::resetBoard() {
-  for (std::vector<Chess> &line : this->board) {
-    for (Chess &c : line) {
-      c = Chess::EMPTY;
+  for (std::vector<ChessPiece> &line : this->board) {
+    for (ChessPiece &c : line) {
+      c = ChessPiece::EMPTY;
     }
   }
 }
 
-bool Board::isChessPositionVaild() const { return true; }
-
 std::ostream &operator<<(std::ostream &os, const Board &b) {
-  for (const std::vector<Chess> &line : b.board) {
-    for (const Chess &c : line) {
-      os << c;
+  os << "   ";
+  for (int i = 0; i < b.board[0].size(); ++i) {
+    os << std::setw(2) << i << " ";
+  }
+  os << std::endl;
+  for (int i = 0; i < b.board.size(); ++i) {
+    os << std::setw(2) << i;
+    for (int j = 0; j < b.board[0].size(); ++j) {
+      os << "  " << b.board[i][j];
     }
     os << std::endl;
   }
   return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const Chess &c) {
-  if (c == Chess::BLACK) {
-    os << 'B';
-  } else if (c == Chess::WHITE) {
-    os << 'W';
+std::ostream &operator<<(std::ostream &os, const ChessPiece &c) {
+  if (c == ChessPiece::BLACK) {
+    os << "●";
+  } else if (c == ChessPiece::WHITE) {
+    os << "○";
   } else {
-    os << '*';
+    os << ".";
   }
   return os;
 }
