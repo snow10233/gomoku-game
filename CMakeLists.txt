@@ -12,7 +12,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 set(SOURCES
     src/main.cpp
     src/board.cpp
-    src/position.cpp
+    src/chess.cpp
 )
 # 告訴 CMake 匯出編譯指令的詳細資訊
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
