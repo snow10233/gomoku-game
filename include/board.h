@@ -1,37 +1,42 @@
 #pragma once
-#include "position.h"
+#include "chess.h"
 #include <iostream>
 #include <vector>
+#include <iomanip>
 
-using dualCharVector = std::vector<std::vector<char>>;
+enum class ChessPiece { EMPTY, BLACK, WHITE };
+
+std::ostream &operator<<(std::ostream &os, const ChessPiece &c);
+
+using dualChessPieceVector = std::vector<std::vector<ChessPiece>>;
 
 class Board {
-  friend std::ostream &operator<<(std::ostream &os,
-                                  const dualCharVector &board);
+  friend std::ostream &operator<<(std::ostream &os, const Board &board);
 
 private:
-  dualCharVector board;
-  Position black, white;
+  dualChessPieceVector board;
+  Chess lastlyChess;
   int sizeLimit;
-  bool whoPlay; // 0 black 1 white
+  ChessPiece whoPlay;
+
 public:
-  Board(const int &size) : sizeLimit(size) {
-    whoPlay = 1;
-    black.setXLimit(-size, size);
-    black.setYLimit(-size, size);
-    white.setXLimit(-size, size);
-    white.setYLimit(-size, size);
+  Board(const int &size = 15) : sizeLimit(size) {
+    whoPlay = ChessPiece::BLACK;
+    lastlyChess.setXLimit(0, size - 1);
+    lastlyChess.setYLimit(0, size - 1);
     for (int i = 0; i < size; i++) {
-      board.push_back(std::vector<char>{});
+      board.push_back(std::vector<ChessPiece>{});
       for (int j = 0; j < size; ++j) {
-        board[i].push_back('*');
+        board[i].push_back(ChessPiece::EMPTY);
       }
     }
   }
 
-  bool isWhoPlayNow() const;
+  ChessPiece isWhoPlayNow() const;
 
-  bool putChess(const int &xPos, const int &yPos);
+  bool putChess(const int &xPosition, const int &yPosition);
 
-  // bool isPosVaild(const int& x, const int& y);
+  void resetBoard();
+
+  bool isChessPositionVaild(const int &xPosition, const int &yPosition) const;
 };
