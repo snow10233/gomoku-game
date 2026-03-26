@@ -4,16 +4,16 @@ int Chess::getX() const { return x; }
 
 int Chess::getY() const { return y; }
 
-bool Chess::isXVaild(const int &xPosition) const {
+bool Chess::isXValid(const int &xPosition) const {
   return xLeftLimit <= xPosition && xPosition <= xRightLimit;
 }
 
-bool Chess::isYVaild(const int &yPosition) const {
+bool Chess::isYValid(const int &yPosition) const {
   return yLeftLimit <= yPosition && yPosition <= yRightLimit;
 }
 
 bool Chess::setPosition(const int &xPosition, const int &yPosition) {
-  if (isXVaild(xPosition) && isYVaild(yPosition)) {
+  if (isXValid(xPosition) && isYValid(yPosition)) {
     x = xPosition;
     y = yPosition;
     return true;
