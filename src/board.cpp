@@ -53,7 +53,7 @@ void Board::resetBoard() {
   }
 }
 
-int getHorizaonlDistance(const Board &b1) {
+int getHorizontalDistance(const Board &b1) {
   int distance = 1;
   int leftIndex = b1.lastlyChess.getX() - 1;
   int rightIndex = b1.lastlyChess.getX() + 1;
@@ -180,7 +180,7 @@ BattleResult Board::calculateBattleState() const {
   // std::cout << "垂直:" << getVerticalDistance(*this) << std::endl;
   // std::cout << "左斜:" << getLeftDiagonalDistance(*this) << std::endl;
   // std::cout << "右斜:" << getRightDiagonalDistance(*this) << std::endl;
-  if (getHorizaonlDistance(*this) >= 5 || getVerticalDistance(*this) >= 5 ||
+  if (getHorizontalDistance(*this) >= 5 || getVerticalDistance(*this) >= 5 ||
       getLeftDiagonalDistance(*this) >= 5 ||
       getRightDiagonalDistance(*this) >= 5) {
     if (whoPlay == ChessPiece::BLACK) {

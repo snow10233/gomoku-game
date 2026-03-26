@@ -15,7 +15,7 @@ std::ostream &operator<<(std::ostream &os, const ChessPiece &c);
 using dualChessPieceVector = std::vector<std::vector<ChessPiece>>;
 class Board {
   friend std::ostream &operator<<(std::ostream &os, const Board &board);
-  friend int getHorizaonlDistance(const Board &b1);
+  friend int getHorizontalDistance(const Board &b1);
   friend int getVerticalDistance(const Board &b1);
   friend int getLeftDiagonalDistance(const Board &b1);
   friend int getRightDiagonalDistance(const Board &b1);
