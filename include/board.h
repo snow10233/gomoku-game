@@ -6,6 +6,8 @@
 
 enum class ChessPiece { EMPTY, BLACK, WHITE };
 
+enum class PutChessResult { SUCCESS, OVER_EDGE, ALL_RIGHT_ONE};
+
 std::ostream &operator<<(std::ostream &os, const ChessPiece &c);
 
 using dualChessPieceVector = std::vector<std::vector<ChessPiece>>;
@@ -34,9 +36,9 @@ public:
 
   ChessPiece isWhoPlayNow() const;
 
-  bool putChess(const int &xPosition, const int &yPosition);
+  PutChessResult putChess(const int &xPosition, const int &yPosition);
 
   void resetBoard();
 
-  bool isChessPositionVaild(const int &xPosition, const int &yPosition) const;
+  PutChessResult isChessPositionVaild(const int &xPosition, const int &yPosition) const;
 };
