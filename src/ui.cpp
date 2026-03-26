@@ -1,6 +1,6 @@
 #include "ui.h"
 
-void everyRoundStartMessage(const Board &b) {
+void UI::everyRoundStartMessage(const Board &b) {
   std::cout << b << std::endl;
   std::string chessInfo = "";
   if (b.isWhoPlayNow() == ChessPiece::BLACK) {
@@ -12,7 +12,7 @@ void everyRoundStartMessage(const Board &b) {
   std::cout << "請輸入位置 (行 列): ";
 }
 
-void clearConsole() {
+void UI::clearConsole() {
 #ifdef _WIN32
   system("cls");
 #else
@@ -20,7 +20,7 @@ void clearConsole() {
 #endif
 }
 
-void pauseConsole() {
+void UI::pauseConsole() {
   std::cout << "Press Enter key to continue...";
 
   // 1. 清空狀態 (預防前面的 cin 發生錯誤被鎖死)
