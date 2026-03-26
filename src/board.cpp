@@ -19,8 +19,8 @@ PutChessResult Board::putChess(const int &xPosition, const int &yPosition) {
 
 PutChessResult Board::isChessPositionVaild(const int &xPosition,
                                            const int &yPosition) const {
-  if (this->lastlyChess.isXVaild(xPosition) &&
-      this->lastlyChess.isYVaild(yPosition)) {
+  if (!this->lastlyChess.isXVaild(xPosition) ||
+      !this->lastlyChess.isYVaild(yPosition)) {
     return PutChessResult::OVER_EDGE;
   } else if (board[yPosition][xPosition] != ChessPiece::EMPTY) {
     return PutChessResult::ALL_RIGHT_ONE;
