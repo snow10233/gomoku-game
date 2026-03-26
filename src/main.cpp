@@ -1,5 +1,5 @@
 #include "board.h"
-#include "ui.h"
+#include "console-ui.h"
 #include <iostream>
 using namespace std;
 
@@ -9,10 +9,10 @@ int main() {
   Board testB1{boardSize};
   int col = 0, row = 0;
   while (true) {
-    UI::showBoard(testB1);
+    CONSOLE_UI::showBoard(testB1);
     BattleResult boardState = testB1.getBattleState();
     if (boardState == BattleResult::CONTINUE) {
-      UI::showWhichPlayer(testB1);
+      CONSOLE_UI::showWhichPlayer(testB1);
       cin >> col >> row;
 
       if (cin.eof()) {
@@ -24,8 +24,8 @@ int main() {
       } else if (result == PutChessResult::OVER_EDGE) {
         cout << "位置無效，請重新輸入！" << endl; // 超出15x15
       }
-      UI::pauseConsole();
-      UI::clearConsole();
+      CONSOLE_UI::pauseConsole();
+      CONSOLE_UI::clearConsole();
       continue;
     } else if (boardState == BattleResult::BLACK_WIN) {
       cout << "黑子(●)獲勝！" << endl;
@@ -37,7 +37,7 @@ int main() {
       cout << "平手" << endl;
       cout << "遊戲結束！" << endl;
     }
-    UI::pauseConsole();
+    CONSOLE_UI::pauseConsole();
     return 0;
   }
 }
