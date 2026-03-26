@@ -1,14 +1,15 @@
 #include "ui.h"
 
-void UI::everyRoundStartMessage(const Board &b) {
-  std::cout << b << std::endl;
-  std::string chessInfo = "";
-  if (b.isWhoPlayNow() == ChessPiece::BLACK) {
-    chessInfo = "黑子(●)";
+void UI::showBoard(const Board &board) {
+  std::cout << board << std::endl;
+}
+
+void UI::showWhichPlayer(const Board& board) {
+  if (board.isWhoPlayNow() == ChessPiece::BLACK) {
+    std::cout << "目前執棋: 黑子(●)" << std::endl;
   } else {
-    chessInfo = "白子(○)";
+    std::cout << "目前執棋: 白子(○)" << std::endl;
   }
-  std::cout << "目前執棋: " << chessInfo << std::endl;
   std::cout << "請輸入位置 (行 列): ";
 }
 
