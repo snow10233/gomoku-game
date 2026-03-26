@@ -12,9 +12,9 @@ public:
 
   int getY() const;
 
-  bool isXVaild(const int &xPosition) const;
+  bool isXValid(const int &xPosition) const;
 
-  bool isYVaild(const int &yPosition) const;
+  bool isYValid(const int &yPosition) const;
 
   bool setPosition(const int &xPosition, const int &yPosition);
 
