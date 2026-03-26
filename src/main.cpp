@@ -28,10 +28,13 @@ int main() {
   Board testB1{boardSize};
   int x = 0, y = 0, c;
   while (everyRoundStartMessage(testB1), cin >> x >> y) {
-    if (!testB1.putChess(x, y)) {
-      cout << "位置無效，請重新輸入！" << endl;         // 超出15x15
+    PutChessResult result = testB1.putChess(x, y);
+    if (result == PutChessResult::ALL_RIGHT_ONE) {
       cout << "無法在該位置下棋，請重新輸入！" << endl; // 重疊到別人
+    } else if (result == PutChessResult::OVER_EDGE) {
+      cout << "位置無效，請重新輸入！" << endl; // 超出15x15
     }
+
     cout << "Press Enter key to continue..." << endl;
     // cin.clear();
     // c = getchar();
