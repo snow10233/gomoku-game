@@ -1,10 +1,10 @@
-#include "ui.h"
+#include "console-ui.h"
 
-void UI::showBoard(const Board &board) {
+void CONSOLE_UI::showBoard(const Board &board) {
   std::cout << board << std::endl;
 }
 
-void UI::showWhichPlayer(const Board& board) {
+void CONSOLE_UI::showWhichPlayer(const Board& board) {
   if (board.isWhoPlayNow() == ChessPiece::BLACK) {
     std::cout << "目前執棋: 黑子(●)" << std::endl;
   } else {
@@ -13,7 +13,7 @@ void UI::showWhichPlayer(const Board& board) {
   std::cout << "請輸入位置 (行 列): ";
 }
 
-void UI::clearConsole() {
+void CONSOLE_UI::clearConsole() {
 #ifdef _WIN32
   system("cls");
 #else
@@ -21,7 +21,7 @@ void UI::clearConsole() {
 #endif
 }
 
-void UI::pauseConsole() {
+void CONSOLE_UI::pauseConsole() {
   std::cout << "Press Enter key to continue...";
 
   // 1. 清空狀態 (預防前面的 cin 發生錯誤被鎖死)
