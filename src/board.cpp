@@ -20,6 +20,7 @@ ChessPiece Board::isWhoPlayNow() const { return whoPlay; }
 PutChessResult Board::putChess(const int &xPosition, const int &yPosition) {
   PutChessResult result = isChessPositionValid(xPosition, yPosition);
   if (result == PutChessResult::SUCCESS) {
+    totalChesses++;
     board[yPosition][xPosition] = whoPlay;
     this->lastlyChess.setPosition(xPosition, yPosition);
     battleState = calculateBattleState();
@@ -53,7 +54,7 @@ void Board::resetBoard() {
   }
 }
 
-int getHorizaonlDistance(const Board &b1) {
+int getHorizontalDistance(const Board &b1) {
   int distance = 1;
   int leftIndex = b1.lastlyChess.getX() - 1;
   int rightIndex = b1.lastlyChess.getX() + 1;
@@ -180,7 +181,7 @@ BattleResult Board::calculateBattleState() const {
   // std::cout << "垂直:" << getVerticalDistance(*this) << std::endl;
   // std::cout << "左斜:" << getLeftDiagonalDistance(*this) << std::endl;
   // std::cout << "右斜:" << getRightDiagonalDistance(*this) << std::endl;
-  if (getHorizaonlDistance(*this) >= 5 || getVerticalDistance(*this) >= 5 ||
+  if (getHorizontalDistance(*this) >= 5 || getVerticalDistance(*this) >= 5 ||
       getLeftDiagonalDistance(*this) >= 5 ||
       getRightDiagonalDistance(*this) >= 5) {
     if (whoPlay == ChessPiece::BLACK) {
@@ -188,7 +189,7 @@ BattleResult Board::calculateBattleState() const {
     } else if (whoPlay == ChessPiece::WHITE) {
       return BattleResult::WHITE_WIN;
     }
-  } else if (totalChesses >= ((sizeLimit - 1) * (sizeLimit - 1))) {
+  } else if (totalChesses >= sizeLimit * sizeLimit) {
     return BattleResult::DRAW;
   }
   return BattleResult::CONTINUE;
