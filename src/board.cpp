@@ -20,6 +20,7 @@ ChessPiece Board::isWhoPlayNow() const { return whoPlay; }
 PutChessResult Board::putChess(const int &xPosition, const int &yPosition) {
   PutChessResult result = isChessPositionValid(xPosition, yPosition);
   if (result == PutChessResult::SUCCESS) {
+    totalChesses++;
     board[yPosition][xPosition] = whoPlay;
     this->lastlyChess.setPosition(xPosition, yPosition);
     battleState = calculateBattleState();
@@ -188,7 +189,7 @@ BattleResult Board::calculateBattleState() const {
     } else if (whoPlay == ChessPiece::WHITE) {
       return BattleResult::WHITE_WIN;
     }
-  } else if (totalChesses >= ((sizeLimit - 1) * (sizeLimit - 1))) {
+  } else if (totalChesses >= sizeLimit * sizeLimit) {
     return BattleResult::DRAW;
   }
   return BattleResult::CONTINUE;
