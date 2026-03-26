@@ -2,8 +2,9 @@
 
 ChessPiece Board::isWhoPlayNow() const { return whoPlay; }
 
-bool Board::putChess(const int &xPosition, const int &yPosition) {
-  if (isChessPositionVaild(xPosition, yPosition)) {
+PutChessResult Board::putChess(const int &xPosition, const int &yPosition) {
+  PutChessResult result = isChessPositionVaild(xPosition, yPosition);
+  if(result== PutChessResult::SUCCESS) {
     board[yPosition][xPosition] = whoPlay;
     this->lastlyChess.setPosition(xPosition, yPosition);
     if (whoPlay == ChessPiece::BLACK) {
@@ -11,16 +12,21 @@ bool Board::putChess(const int &xPosition, const int &yPosition) {
     } else {
       whoPlay = ChessPiece::BLACK;
     }
-    return true;
+    return PutChessResult::SUCCESS;
   }
-  return false;
+  return result;
 }
 
-bool Board::isChessPositionVaild(const int &xPosition,
-                                 const int &yPosition) const {
-  return this->lastlyChess.isXVaild(xPosition) &&
-         this->lastlyChess.isYVaild(yPosition) &&
-         board[yPosition][xPosition] == ChessPiece::EMPTY;
+PutChessResult Board::isChessPositionVaild(const int &xPosition,
+                                           const int &yPosition) const {
+  if (!this->lastlyChess.isXVaild(xPosition) ||
+      !this->lastlyChess.isYVaild(yPosition)) {
+    return PutChessResult::OVER_EDGE;
+  } else if (board[yPosition][xPosition] != ChessPiece::EMPTY) {
+    return PutChessResult::ALL_RIGHT_ONE;
+  } else {
+    return PutChessResult::SUCCESS;
+  }
 }
 
 void Board::resetBoard() {
