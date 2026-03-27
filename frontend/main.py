@@ -20,9 +20,9 @@ COLOR_WHITE = (255, 255, 255) # 白子
 engine = GomokuEngine()
 
 # === 2. 初始化 Pygame ===
-pygame.display.init() # 先關音效 之後要開就用pygame.init()
+pygame.init()
 screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
-pygame.display.set_caption("Pygame - gomoku test")
+pygame.display.set_caption("Gomoku")
 
 #計時器
 font = pygame.font.SysFont("Arial", 30) 
