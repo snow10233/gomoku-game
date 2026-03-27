@@ -5,7 +5,7 @@ from engine_bridge import GomokuEngine
 # === 1. 基本設定與常數 ===
 BOARD_SIZE = 15
 GRID_WIDTH = 40  # 每一格的寬度 (像素)
-MARGIN = 40      # 棋盤距離視窗邊緣的空白距離
+MARGIN = 60      # 棋盤距離視窗邊緣的空白距離
 
 # 視窗總大小 = (14個間距 * 40) + 左右兩邊的邊距
 WINDOW_SIZE = (BOARD_SIZE - 1) * GRID_WIDTH + MARGIN * 2
@@ -24,9 +24,16 @@ pygame.display.init() # 先關音效 之後要開就用pygame.init()
 screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
 pygame.display.set_caption("Pygame - gomoku test")
 
+#計時器
+font = pygame.font.SysFont("Arial", 30) 
+clock = pygame.time.Clock()
+
 # 前端自己暫存的假盤面 (測試畫圖用，0=空, 1=黑, 2=白)
 board = [[0 for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
 current_player = 1 
+
+TIME_LIMIT = 60  # 每步限制 60 秒
+turn_start_time = pygame.time.get_ticks()
 
 def draw_board():
     """負責畫出背景跟 15x15 的網格線"""
@@ -61,7 +68,30 @@ running = True
 while running:
     draw_board()
     draw_chess()
+
+    current_time = pygame.time.get_ticks()
+    elapsed_seconds = (current_time - turn_start_time) // 1000 # 算出這回合已經經過了幾秒
+    remaining_time = TIME_LIMIT - elapsed_seconds              # 算出剩下幾秒
+
+    # 檢查是否超時
+    if remaining_time <= 0:
+        print(f"玩家 {current_player} 超時！自動換對手下棋。")
+        current_player = 2 if current_player == 1 else 1
+        turn_start_time = pygame.time.get_ticks() # 超時換人，重置計時器
+        remaining_time = TIME_LIMIT
+
+    # 🚀 3. 繪製計時器文字 (順便顯示現在是誰的回合)
+    player_name = "Black" if current_player == 1 else "White"
+    # 為了讓畫面更好看，白子回合時文字用深灰色顯示
+    text_color = COLOR_BLACK if current_player == 1 else (80, 80, 80) 
+    timer_text = f"{player_name} Turn | Time: {remaining_time}s"
+    
+    text_surface = font.render(timer_text, True, text_color)
+    text_rect = text_surface.get_rect(center=(WINDOW_SIZE // 2, 30))
+    screen.blit(text_surface, text_rect)
+
     pygame.display.flip() # 更新畫面
+    clock.tick(60)
 
     # 監聽玩家的動作
     for event in pygame.event.get():
@@ -88,6 +118,9 @@ while running:
                     # (現在先假裝下棋，為了給你看視覺效果)
                     board[row][col] = current_player
                     current_player = 2 if current_player == 1 else 1
+
+                    #重製計時器
+                    turn_start_time = pygame.time.get_ticks()
 
 pygame.quit()
 sys.exit()
