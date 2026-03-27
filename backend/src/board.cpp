@@ -175,6 +175,30 @@ std::ostream &operator<<(std::ostream &os, const ChessPiece &c) {
   return os;
 }
 
+std::ostream &operator<<(std::ostream &os, const PutChessResult &p) {
+  if (p == PutChessResult::ALL_RIGHT_ONE) {
+    os << "OVERIAPPING";
+  } else if (p == PutChessResult::OVER_EDGE) {
+    os << "OVER_EDGE";
+  } else {
+    os << "SUCCESS";
+  }
+  return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const BattleResult &b) {
+  if (b == BattleResult::BLACK_WIN) {
+    os << "BLACK";
+  } else if (b == BattleResult::WHITE_WIN) {
+    os << "WHITE";
+  } else if (b == BattleResult::DRAW) {
+    os << "DRAW";
+  } else {
+    os << "CONTINUE";
+  }
+  return os;
+}
+
 BattleResult Board::calculateBattleState() const {
   // std::cout << "whoPlay:" << whoPlay << std::endl;
   // std::cout << "水平:" << getHorizaonlDistance(*this) << std::endl;
