@@ -29,8 +29,16 @@
 
 ---
 ### 環境配置
+
+#### C++
+> 確保已安裝cmake WSL也要
 1. 在當前目錄下建立build資料夾
-2. 確保已安裝cmake
-  > WSL也要
-4. 進入build後 在command 打 `make`
-5. 等待gomoku檔案出現後 執行 `./gomoku`
+2. 進入build後 在command 打 `make`
+3. 等待gomoku檔案出現後 執行 `./gomoku`
+
+#### python
+> 使用venv避免汙染全局環境
+1. 確定WSL已安裝venv
+2. command : `python3 venv -m venv venv` + `source venv/bin/activate`
+3. 確定最左邊出現(venv) 
+4. `pip install ...`
