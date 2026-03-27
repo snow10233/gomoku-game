@@ -1,27 +1,50 @@
-name: Gomoku CI (Ubuntu)
+name: Gomoku CI (C++ & Python)
 
-# 1. 什麼時候要喚醒機器人？
 on:
   push:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
-# 2. 機器人要做的工作流程 (Jobs)
 jobs:
-  build:
+  # =========================================
+  # 任務一：編譯 C++ 後端引擎
+  # =========================================
+  build-backend:
     runs-on: ubuntu-latest
-
     steps:
     - name: 📥 步驟 1：下載專案程式碼
       uses: actions/checkout@v3
 
     - name: ⚙️ 步驟 2：執行 CMake 設定
-      # 告訴機器人：請在 backend 資料夾裡面執行這行指令
       working-directory: ./backend
       run: cmake -B build
 
     - name: 🔨 步驟 3：開始編譯！
-      # 這裡也一樣，確保它在 backend 裡面找 build 資料夾
       working-directory: ./backend
       run: cmake --build build
+
+  # =========================================
+  # 任務二：檢查 Python 前端環境 (與後端同時進行)
+  # =========================================
+  check-frontend:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 📥 步驟 1：下載專案程式碼
+      uses: actions/checkout@v3
+
+    - name: 🐍 步驟 2：安裝 Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12' # 配合你本地的環境
+
+    - name: 📦 步驟 3：安裝前端套件 (Pygame)
+      working-directory: ./frontend
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: 🔍 步驟 4：基本語法防呆檢查
+      working-directory: ./frontend
+      # py_compile 會幫你檢查有沒有少寫冒號、括號不對稱等致命語法錯誤
+      run: python -m py_compile main.py engine_bridge.py
