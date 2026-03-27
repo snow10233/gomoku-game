@@ -6,19 +6,19 @@ using namespace std;
 const int boardSize = 15;
 
 int main() {
-  Board testB1{boardSize};
+  Board gameBoard{boardSize};
   int col = 0, row = 0;
   while (true) {
-    CONSOLE_UI::showBoard(testB1);
-    BattleResult boardState = testB1.getBattleState();
+    CONSOLE_UI::showBoard(gameBoard);
+    BattleResult boardState = gameBoard.getBattleState();
     if (boardState == BattleResult::CONTINUE) {
-      CONSOLE_UI::showWhichPlayer(testB1);
+      CONSOLE_UI::showWhichPlayer(gameBoard);
       cin >> col >> row;
 
       if (cin.eof()) {
         return 0;
       }
-      PutChessResult result = testB1.putChess(row, col);
+      PutChessResult result = gameBoard.putChess(row, col);
       if (result == PutChessResult::ALL_RIGHT_ONE) {
         cout << "無法在該位置下棋，請重新輸入！" << endl; // 重疊到別人
       } else if (result == PutChessResult::OVER_EDGE) {

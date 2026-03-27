@@ -1,13 +1,13 @@
 # 五子棋 project
 
 ### 功能實現
-~顯示 15×15 之標準棋盤~
+~~顯示 15×15 之標準棋盤~~
   - 重載<<運算子直接輸出Board物件
 
-~黑子（先行）與白子兩邊輪流下棋於點上~
+~~黑子（先行）與白子兩邊輪流下棋於點上~~
   - bool函數紀錄輪流順序
 
-~能判斷結束並顯示贏家~
+~~能判斷結束並顯示贏家~~
   - 紀錄最後一顆棋子的落點位置
   - 只要判斷最終棋子本身是否連線
 
@@ -29,8 +29,16 @@
 
 ---
 ### 環境配置
+
+#### C++
+> 確保已安裝cmake WSL也要
 1. 在當前目錄下建立build資料夾
-2. 確保已安裝cmake
-  > WSL也要
-4. 進入build後 在command 打 `make`
-5. 等待gomoku檔案出現後 執行 `./gomoku`
+2. 進入build後 在command 打 `make`
+3. 等待gomoku檔案出現後 執行 `./gomoku`
+
+#### python
+> 使用venv避免汙染全局環境
+1. 確定WSL已安裝venv
+2. command : `python3 venv -m venv venv` + `source venv/bin/activate`
+3. 確定最左邊出現(venv) 
+4. `pip install ...`
