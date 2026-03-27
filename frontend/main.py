@@ -1,5 +1,6 @@
 import pygame
 import sys
+from engine_bridge import GomokuEngine
 
 # === 1. 基本設定與常數 ===
 BOARD_SIZE = 15
@@ -15,8 +16,11 @@ COLOR_LINE = (0, 0, 0)      # 黑線
 COLOR_BLACK = (0, 0, 0)     # 黑子
 COLOR_WHITE = (255, 255, 255) # 白子
 
+
+engine = GomokuEngine()
+
 # === 2. 初始化 Pygame ===
-pygame.init()
+pygame.display.init() # 先關音效 之後要開就用pygame.init()
 screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
 pygame.display.set_caption("Pygame - gomoku test")
 
@@ -108,12 +112,8 @@ while running:
                 if board[row][col] == 0:
                     print(f"前端抓到點擊！ 行(row)={row}, 列(col)={col}")
                     
-                    # ==========================================
-                    # 🚀 未來跟你的 C++ 結合的地方：
-                    # 這裡不要直接改 board，而是把字串傳給你的 C++
-                    # 例如透過 subprocess: cpp_engine.stdin.write(f"{col} {row}\n")
-                    # 然後等待 C++ 回傳結果，再來決定要畫什麼顏色
-                    # ==========================================
+                    res, state = engine.put_chess(row, col)
+                    print(f"後端說：落子{res}, 目前狀態{state}")
                     
                     # (現在先假裝下棋，為了給你看視覺效果)
                     board[row][col] = current_player
