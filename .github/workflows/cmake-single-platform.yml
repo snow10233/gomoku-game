@@ -1,7 +1,6 @@
 name: Gomoku CI (Ubuntu)
 
 # 1. 什麼時候要喚醒機器人？
-# 答案：當有人推程式碼到 master 分支，或是發起 PR 時
 on:
   push:
     branches: [ "master" ]
@@ -11,18 +10,18 @@ on:
 # 2. 機器人要做的工作流程 (Jobs)
 jobs:
   build:
-    # 租一台最新的 Ubuntu 虛擬機 (就跟你的 WSL 一樣)
     runs-on: ubuntu-latest
 
-    # 機器人執行的步驟清單
     steps:
     - name: 📥 步驟 1：下載專案程式碼
       uses: actions/checkout@v3
 
     - name: ⚙️ 步驟 2：執行 CMake 設定
-      # 這等同於你平常建置專案的第一步
+      # 告訴機器人：請在 backend 資料夾裡面執行這行指令
+      working-directory: ./backend
       run: cmake -B build
 
     - name: 🔨 步驟 3：開始編譯！
-      # 這等同於你按下 VS Code 的 Build 按鈕
+      # 這裡也一樣，確保它在 backend 裡面找 build 資料夾
+      working-directory: ./backend
       run: cmake --build build
