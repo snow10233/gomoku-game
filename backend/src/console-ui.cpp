@@ -35,7 +35,7 @@ void CONSOLE_UI::pauseConsole() {
   std::cin.get();
 }
 
-bool CONSOLE_UI::isChessInputValid() {
+bool CONSOLE_UI::isInputValid() {
   if (std::cin.fail()) {
     // 將fail or badbit 恢復成 goodbit
     std::cin.clear();
@@ -48,9 +48,16 @@ bool CONSOLE_UI::isChessInputValid() {
 }
 
 bool CONSOLE_UI::isGameModeInputValid(std::string &gameMode) {
-  if (!isChessInputValid()) {
+  if (!isInputValid()) {
     return false;
   }
   return gameMode == "AI_MODE" || gameMode == "TWO_PLAYER_MODE" ||
          gameMode == "REVIEW_MODE" || gameMode == "RELOAD_MODE";
+}
+
+bool CONSOLE_UI::isGameActionInputValid(std::string &action) {
+  if (!isInputValid()) {
+    return false;
+  }
+  return action == "PUTCHESS" || action == "TAKE_BACK" || action == "SAVE";
 }
