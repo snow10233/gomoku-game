@@ -1,5 +1,10 @@
 #include "chess.h"
 
+void Chess::resetChess() {
+  x = -1;
+  y = -1;
+}
+
 int Chess::getX() const { return x; }
 
 int Chess::getY() const { return y; }

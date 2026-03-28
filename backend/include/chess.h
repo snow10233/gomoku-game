@@ -5,8 +5,10 @@ private:
   int y, yLeftLimit, yRightLimit;
 
 public:
-  Chess(const int &xPosition = 0, const int &yPosition = 0)
+  Chess(const int &xPosition = -1, const int &yPosition = -1)
       : x(xPosition), y(yPosition) {}
+
+  void resetChess();
 
   int getX() const;
 
