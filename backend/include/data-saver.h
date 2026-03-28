@@ -3,15 +3,17 @@
 #include <stack>
 #include <utility>
 
+class Board;
+
 class DataSaver {
   friend std::ostream &operator<<(std::ostream &os, const DataSaver &Data);
+  friend Board;
 
 private:
   std::stack<std::pair<int, int>> steps;
-public:
-  DataSaver();
 
+public:
   void putAChess(const int x, const int y);
 
-  std::pair<int, int> takeBackAMove();
+  bool takeBackAMove();
 };
