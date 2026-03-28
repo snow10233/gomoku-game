@@ -12,7 +12,9 @@ void clearConsole();
 
 void pauseConsole();
 
-bool isChessInputValid();
+bool isInputValid();
 
 bool isGameModeInputValid(std::string &gameMode);
+
+bool isGameActionInputValid(std::string& action);
 } // namespace CONSOLE_UI
