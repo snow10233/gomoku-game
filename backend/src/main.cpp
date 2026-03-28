@@ -1,35 +1,67 @@
 #include "board.h"
-// #include "console-ui.h"
+#include "console-ui.h"
 #include <iostream>
-#include <limits>
 using namespace std;
 
 const int boardSize = 15;
 
 int main() {
   Board gameBoard{boardSize};
+  string gameMode;
+  bool gameContinue = true;
   int col = 0, row = 0;
-  while (true) {
-    cin >> col >> row;
-    if (cin.fail()) {
-      // 將fail or badbit 恢復成 goodbit
-      cin.clear();
+  while (gameContinue) {
+    cin >> gameMode;
 
-      // 清空console
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-      cout << "INVALID CONTINUE" << endl;
+    if (!CONSOLE_UI::isGameModeInputValid(gameMode)) {
+      cout << "INVALID" << endl;
       continue;
     }
+    cout << "SUCCESS" << endl;
 
-    PutChessResult putChessResultState = gameBoard.putChess(row, col);
-    BattleResult boardState = gameBoard.getBattleState();
+    if (gameMode == "AI_MODE") {
+      string action;
+      while (true) {
+        cin >> action;
 
-    // CONSOLE_UI::showBoard(gameBoard);
-    cout << putChessResultState << " " << boardState << endl;
+        if (!CONSOLE_UI::isGameActionInputValid(action)) {
+          cout << "INVALID" << endl;
+          continue;
+        }
+        cout << "SUCCESS" << endl;
 
-    if (boardState != BattleResult::CONTINUE) {
-      break;
+        if (action == "PUTCHESS") {
+          // CONSOLE_UI::showBoard(gameBoard);
+
+          cin >> col >> row;
+
+          if (!CONSOLE_UI::isInputValid()) {
+            cout << "INVALID CONTINUE" << endl;
+            continue;
+          }
+
+          PutChessResult putChessResultState = gameBoard.putChess(row, col);
+          BattleResult boardState = gameBoard.getBattleState();
+
+          cout << putChessResultState << " " << boardState << endl;
+        } else if (action == "TAKE_BACK") {
+          if (!gameBoard.takeBackAMove()) {
+            cout << "INVALID" << endl;
+            continue;
+          }
+          cout << "SUCCESS" << endl;
+        } else if (action == "SAVE") {
+          // 敬請期待
+        }
+      } 
+    } else if (gameMode == "TWO_PLAYER_MODE") {
+      // 敬請期待
+
+    } else if (gameMode == "REVIEW_MODE") {
+      // 敬請期待
+
+    } else if (gameMode == "RELOAD_MODE") {
+      // 敬請期待
     }
   }
 }
