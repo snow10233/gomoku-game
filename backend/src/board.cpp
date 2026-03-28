@@ -17,42 +17,7 @@ Board::Board(int size) {
 
 ChessPiece Board::isWhoPlayNow() const { return whoPlay; }
 
-PutChessResult Board::putChess(const int &xPosition, const int &yPosition) {
-  PutChessResult result = isChessPositionValid(xPosition, yPosition);
-  if (result == PutChessResult::SUCCESS) {
-    totalChesses++;
-    board[yPosition][xPosition] = whoPlay;
-    this->lastlyChess.setPosition(xPosition, yPosition);
-    battleState = calculateBattleState();
-    if (whoPlay == ChessPiece::BLACK) {
-      whoPlay = ChessPiece::WHITE;
-    } else {
-      whoPlay = ChessPiece::BLACK;
-    }
-    return PutChessResult::SUCCESS;
-  }
-  return result;
-}
-
-PutChessResult Board::isChessPositionValid(const int &xPosition,
-                                           const int &yPosition) const {
-  if (!this->lastlyChess.isXValid(xPosition) ||
-      !this->lastlyChess.isYValid(yPosition)) {
-    return PutChessResult::OVER_EDGE;
-  } else if (board[yPosition][xPosition] != ChessPiece::EMPTY) {
-    return PutChessResult::ALL_RIGHT_ONE;
-  } else {
-    return PutChessResult::SUCCESS;
-  }
-}
-
-void Board::resetBoard() {
-  for (std::vector<ChessPiece> &line : this->board) {
-    for (ChessPiece &c : line) {
-      c = ChessPiece::EMPTY;
-    }
-  }
-}
+BattleResult Board::getBattleState() const { return battleState; }
 
 int getHorizontalDistance(const Board &b1) {
   int distance = 1;
@@ -148,6 +113,103 @@ int getRightDiagonalDistance(const Board &b1) {
   return distance;
 }
 
+void Board::changePlayer() {
+  if (whoPlay == ChessPiece::BLACK) {
+    whoPlay = ChessPiece::WHITE;
+  } else {
+    whoPlay = ChessPiece::BLACK;
+  }
+}
+
+PutChessResult Board::putChess(const int &xPosition, const int &yPosition) {
+  PutChessResult result = isChessPositionValid(xPosition, yPosition);
+
+  if (result == PutChessResult::SUCCESS) {
+    totalChesses++;
+    board[yPosition][xPosition] = whoPlay;
+    this->lastlyChess.setPosition(xPosition, yPosition);
+    boardData.putAChess(xPosition, yPosition);
+
+    changePlayer();
+
+    battleState = calculateBattleState();
+
+    return PutChessResult::SUCCESS;
+  }
+
+  return result;
+}
+
+PutChessResult Board::isChessPositionValid(const int &xPosition,
+                                           const int &yPosition) const {
+  if (!this->lastlyChess.isXValid(xPosition) ||
+      !this->lastlyChess.isYValid(yPosition)) {
+    return PutChessResult::OVER_EDGE;
+  } else if (board[yPosition][xPosition] != ChessPiece::EMPTY) {
+    return PutChessResult::ALL_RIGHT_ONE;
+  } else {
+    return PutChessResult::SUCCESS;
+  }
+}
+
+void Board::resetBoard() {
+  for (std::vector<ChessPiece> &line : this->board) {
+    for (ChessPiece &c : line) {
+      c = ChessPiece::EMPTY;
+    }
+  }
+}
+
+BattleResult Board::calculateBattleState() const {
+  if (getHorizontalDistance(*this) >= 5 || getVerticalDistance(*this) >= 5 ||
+      getLeftDiagonalDistance(*this) >= 5 ||
+      getRightDiagonalDistance(*this) >= 5) {
+    if (whoPlay == ChessPiece::BLACK) {
+      return BattleResult::BLACK_WIN;
+    } else if (whoPlay == ChessPiece::WHITE) {
+      return BattleResult::WHITE_WIN;
+    }
+  } else if (totalChesses >= sizeLimit * sizeLimit) {
+    return BattleResult::DRAW;
+  }
+  return BattleResult::CONTINUE;
+}
+
+bool Board::takeBackAMove() {
+  if (!boardData.takeBackAMove()) {
+    return false;
+  }
+
+  board[lastlyChess.getY()][lastlyChess.getX()] = ChessPiece::EMPTY;
+
+  if (!boardData.steps.empty()) {
+    auto temp = boardData.steps.top();
+    lastlyChess.setPosition(temp.first, temp.second);
+  } else {
+    lastlyChess.resetChess();
+  }
+
+  changePlayer();
+  totalChesses--;
+  return true;
+}
+
+// std::pair<int, int> findBestChessPos(dualChessPieceVector vec, ChessPiece
+// player) {
+//   std::pair<int, int> pos, score;
+//   for(std::vector<ChessPiece>& v : vec) {
+//     for(ChessPiece c : v) {
+//       if(c == ChessPiece::EMPTY) {
+//         c = player;
+//
+//       }
+//     }
+//   }
+// }
+//
+// void Board::AIPutChess() {
+// }
+
 std::ostream &operator<<(std::ostream &os, const Board &b) {
   os << "   ";
   for (int i = 0; i < b.board[0].size(); ++i) {
@@ -198,25 +260,3 @@ std::ostream &operator<<(std::ostream &os, const BattleResult &b) {
   }
   return os;
 }
-
-BattleResult Board::calculateBattleState() const {
-  // std::cout << "whoPlay:" << whoPlay << std::endl;
-  // std::cout << "水平:" << getHorizaonlDistance(*this) << std::endl;
-  // std::cout << "垂直:" << getVerticalDistance(*this) << std::endl;
-  // std::cout << "左斜:" << getLeftDiagonalDistance(*this) << std::endl;
-  // std::cout << "右斜:" << getRightDiagonalDistance(*this) << std::endl;
-  if (getHorizontalDistance(*this) >= 5 || getVerticalDistance(*this) >= 5 ||
-      getLeftDiagonalDistance(*this) >= 5 ||
-      getRightDiagonalDistance(*this) >= 5) {
-    if (whoPlay == ChessPiece::BLACK) {
-      return BattleResult::BLACK_WIN;
-    } else if (whoPlay == ChessPiece::WHITE) {
-      return BattleResult::WHITE_WIN;
-    }
-  } else if (totalChesses >= sizeLimit * sizeLimit) {
-    return BattleResult::DRAW;
-  }
-  return BattleResult::CONTINUE;
-}
-
-BattleResult Board::getBattleState() const { return battleState; }
