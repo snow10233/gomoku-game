@@ -1,15 +1,11 @@
 # 五子棋 project
 
-### 功能實現
+### 已實現功能進度表
 ~~顯示 15×15 之標準棋盤~~
-  - 重載<<運算子直接輸出Board物件
 
-~~黑子（先行）與白子兩邊輪流下棋於點上~~
-  - bool函數紀錄輪流順序
+~~黑子 (先行)與白子兩邊輪流下棋於點上~~
 
 ~~能判斷結束並顯示贏家~~
-  - 紀錄最後一顆棋子的落點位置
-  - 只要判斷最終棋子本身是否連線
 
 盤面、按鈕、輪到誰等資訊清楚易讀
 
@@ -40,5 +36,56 @@
 > 使用venv避免汙染全局環境
 1. 確定WSL已安裝venv
 2. command : `python3 venv -m venv venv` + `source venv/bin/activate`
-3. 確定最左邊出現(venv) 
-4. `pip install ...`
+3. 確定最左邊出現 (venv) 
+4. 根據需求新增對應library到虛擬環境中 `pip install ...`
+
+---
+### 功能測試流程
+1. 輸入 `source venv/bin/activate` 進入venv
+2. 進入 `backend/build` 輸入 `make`
+3. 進入 `frontend` 輸入 `python3 main.py`
+
+## 溝通格式
+
+
+### 涵義說明
+
+- {傳送內容} : 溝通固定內容
+- {A / B} : 成功輸出A 失敗輸出B
+- 由上而下依序通訊
+- 多個資料用一個空格隔開
+
+### 流程指令說明
+
+1. 選擇模式  
+    1. 單人 (AI)
+	    - py -> {AI_MODE} -> cpp
+	    - cpp -> {SUCCESS / INVALID} -> py
+    2. 雙人 (房號P2P連線)
+	    - py -> {TWO_PLAYER_MODE} -> cpp
+	    - cpp -> {SUCCESS / INVALID} -> py
+    3. 回放 (選擇檔案) 
+	    - py -> {REVIEW_MODE} -> cpp
+	    - cpp -> {SUCCESS / INVALID} -> py
+    4. 載入 (暫時先開放單人就好) 
+	    - py -> {RELOAD_MODE} -> cpp
+	    - cpp -> {SUCCESS / INVALID} -> py
+2. 遊玩過程
+    1. 下棋 (相互通訊x, y) 
+	    - py ->{PUTCHESS} -> cpp
+	    - cpp -> {SUCCESS / INVALID} -> py
+	    - py -> {x y} -> cpp
+        - cpp -> {PUTRESULT BOARDSTATE AI's x AI's y / INVALID CONTINUE -1 -1} -> py
+    2. 悔棋 (可以無限悔棋)
+	    - py -> {TAKE_BACK} -> cpp
+	    - cpp -> {SUCCESS / INVALID} -> py
+    3. 儲存 (下次再玩，暫時開放單人)
+		- py -> {SAVE} -> cpp
+		- cpp -> {SUCCESS / INVALID}  -> py
+3. 遊戲結束
+     1. 分享 (輸出 `chessBattleResultData.txt` 檔案 暫定PGN)
+        - py -> {SHARE} -> cpp
+        - cpp -> {SUCCESS / INVALID} -> py
+     2. 回到主選單 (回到步驟1)
+	    - py -> {HOME_PAGE} -> cpp
+	    - cpp -> {SUCCESS / INVALID} -> py
