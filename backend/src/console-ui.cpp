@@ -4,7 +4,7 @@ void CONSOLE_UI::showBoard(const Board &board) {
   std::cout << board << std::endl;
 }
 
-void CONSOLE_UI::showWhichPlayer(const Board& board) {
+void CONSOLE_UI::showWhichPlayer(const Board &board) {
   if (board.isWhoPlayNow() == ChessPiece::BLACK) {
     std::cout << "目前執棋: 黑子(●)" << std::endl;
   } else {
@@ -33,4 +33,24 @@ void CONSOLE_UI::pauseConsole() {
 
   // 3. 真正等待玩家按下 Enter
   std::cin.get();
+}
+
+bool CONSOLE_UI::isChessInputValid() {
+  if (std::cin.fail()) {
+    // 將fail or badbit 恢復成 goodbit
+    std::cin.clear();
+
+    // 清空console
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    return false;
+  }
+  return true;
+}
+
+bool CONSOLE_UI::isGameModeInputValid(std::string &gameMode) {
+  if (!isChessInputValid()) {
+    return false;
+  }
+  return gameMode == "AI_MODE" || gameMode == "TWO_PLAYER_MODE" ||
+         gameMode == "REVIEW_MODE" || gameMode == "RELOAD_MODE";
 }
