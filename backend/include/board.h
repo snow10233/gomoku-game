@@ -1,5 +1,6 @@
 #pragma once
 #include "chess.h"
+#include "data-saver.h"
 #include <iomanip>
 #include <iostream>
 #include <vector>
@@ -27,12 +28,15 @@ class Board {
 private:
   dualChessPieceVector board;
   Chess lastlyChess;
+  DataSaver boardData;
   int sizeLimit;
   ChessPiece whoPlay;
   int totalChesses;
   BattleResult battleState;
 
   BattleResult calculateBattleState() const;
+
+  void changePlayer();
 
 public:
   Board(int size = 15);
@@ -47,4 +51,8 @@ public:
                                       const int &yPosition) const;
 
   BattleResult getBattleState() const;
+
+  bool takeBackAMove();
+
+  // void AIPutChess();
 };
