@@ -1,23 +1,12 @@
 #pragma once
 #include "chess.h"
 #include "data-saver.h"
+#include "state.h"
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <vector>
-
-enum class ChessPiece { EMPTY, BLACK, WHITE };
-
-enum class PutChessResult { SUCCESS, OUT_BOUNDS, OVERLAPPING };
-
-enum class BattleResult { BLACK_WIN, WHITE_WIN, DRAW, CONTINUE };
-
-std::ostream &operator<<(std::ostream &os, const ChessPiece &c);
-
-std::ostream &operator<<(std::ostream &os, const PutChessResult &p);
-
-std::ostream &operator<<(std::ostream &os, const BattleResult &b);
 
 using dualChessPieceVector = std::vector<std::vector<ChessPiece>>;
 using AICalculatePair = std::pair<std::pair<int, int>, int>;
@@ -33,10 +22,10 @@ private:
   dualChessPieceVector board;
   Chess lastlyChess;
   DataSaver boardData;
-  int sizeLimit;
   ChessPiece whoPlay;
-  int totalChesses;
   BattleResult battleState;
+  int sizeLimit;
+  int totalChesses;
 
   BattleResult calculateBattleState() const;
 
@@ -49,15 +38,15 @@ public:
 
   ChessPiece isWhoPlayNow() const;
 
+  BattleResult getBattleState() const;
+
   PutChessResult putChess(const int x, const int y);
 
   void resetBoard();
 
-  BattleResult getBattleState() const;
-
-  bool takeBackAMove(int &x, int &y);
-
   void overTimeProcess();
 
-  std::pair<int, int> AIPutChess();
+  std::pair<int, int> takeBackAMove();
+
+  std::pair<int, int> aiFindBestPos();
 };

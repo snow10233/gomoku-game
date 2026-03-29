@@ -41,32 +41,61 @@ int main() {
           PutChessResult putChessResultState = gameBoard.putChess(col, row);
 
           BattleResult boardState = gameBoard.getBattleState();
-          pair<int, int> AIPos{-1, -1};
-          if (boardState == BattleResult::CONTINUE && putChessResultState == PutChessResult::SUCCESS) {
-            AIPos = gameBoard.AIPutChess();
-            gameBoard.putChess(AIPos.first, AIPos.second);
+          pair<int, int> aiPos{-1, -1};
+
+          if (boardState == BattleResult::CONTINUE &&
+              putChessResultState == PutChessResult::SUCCESS) {
+            aiPos = gameBoard.aiFindBestPos();
+            gameBoard.putChess(aiPos.first, aiPos.second);
             boardState = gameBoard.getBattleState();
           }
 
-          // CONSOLE_UI::showBoard(gameBoard);
-
           cout << putChessResultState << " ";
           cout << boardState << " ";
-          cout << AIPos.first << " ";
-          cout << AIPos.second << endl;
+          cout << aiPos.first << " ";
+          cout << aiPos.second << endl;
 
+          // CONSOLE_UI::showBoard(gameBoard);
         } else if (action == "TAKE_BACK") {
-          int deleteX = 0, deleteY = 0;
-          if (!gameBoard.takeBackAMove(deleteY, deleteX)) {
+          pair<int, int> aiDelete = gameBoard.takeBackAMove();
+
+          if (aiDelete.first == -1) {
             cout << "INVALID -1 -1" << endl;
             continue;
           }
-          cout << "SUCCESS" << " " << deleteY << " " << deleteX << endl;
-        } else if (action == "SAVE") {
-          // 敬請期待
+
+          cout << "SUCCESS" << " ";
+          cout << aiDelete.first << " ";
+          cout << aiDelete.second << endl;
+
+          pair<int, int> playerDelete = gameBoard.takeBackAMove();
+
+          if (playerDelete.first == -1) {
+            cout << "INVALID -1 -1" << endl;
+            continue;
+          }
+
+          cout << "SUCCESS" << " ";
+          cout << playerDelete.first << " ";
+          cout << playerDelete.second << endl;
+
+          // CONSOLE_UI::showBoard(gameBoard);
         } else if (action == "OVER_TIME") {
           gameBoard.overTimeProcess();
           cout << "SUCCESS" << endl;
+
+          pair<int, int> aiPos = gameBoard.aiFindBestPos();
+          PutChessResult putChessResultState =
+              gameBoard.putChess(aiPos.first, aiPos.second);
+
+          BattleResult boardState = gameBoard.getBattleState();
+
+          cout << putChessResultState << " ";
+          cout << boardState << " ";
+          cout << aiPos.first << " ";
+          cout << aiPos.second << endl;
+        } else if (action == "SAVE") {
+          // 敬請期待
         }
       }
     } else if (gameMode == "TWO_PLAYER_MODE") {
