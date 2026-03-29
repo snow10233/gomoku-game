@@ -46,11 +46,12 @@ int main() {
           cout << putChessResultState << " " << boardState << " " << 0 << " "
                << 0 << endl;
         } else if (action == "TAKE_BACK") {
-          if (!gameBoard.takeBackAMove()) {
-            cout << "INVALID" << endl;
+          int deleteX = 0, deleteY = 0;
+          if (!gameBoard.takeBackAMove(deleteY, deleteX)) {
+            cout << "INVALID -1 -1" << endl;
             continue;
           }
-          cout << "SUCCESS" << endl;
+          cout << "SUCCESS" << " " << deleteY << " " << deleteX << endl;
         } else if (action == "SAVE") {
           // 敬請期待
         } else if (action == "OVER_TIME") {
