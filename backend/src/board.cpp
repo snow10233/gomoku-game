@@ -142,6 +142,12 @@ void Board::resetBoard() {
 }
 
 BattleResult Board::calculateBattleState() const {
+  // std::cout << whoPlay << std::endl;
+  // std::cout << getHorizontalDistance(*this) << " ";
+  // std::cout << getVerticalDistance(*this) << " ";
+  // std::cout << getLeftDiagonalDistance(*this) << " ";
+  // std::cout << getRightDiagonalDistance(*this) << std::endl;
+
   if (getHorizontalDistance(*this) >= 5 || getVerticalDistance(*this) >= 5 ||
       getLeftDiagonalDistance(*this) >= 5 ||
       getRightDiagonalDistance(*this) >= 5) {
@@ -153,6 +159,7 @@ BattleResult Board::calculateBattleState() const {
   } else if (totalChesses >= sizeLimit * sizeLimit) {
     return BattleResult::DRAW;
   }
+
   return BattleResult::CONTINUE;
 }
 
@@ -165,11 +172,9 @@ PutChessResult Board::putChess(const int &xPosition, const int &yPosition) {
     this->lastlyChess.setPosition(xPosition, yPosition);
     boardData.putAChess(xPosition, yPosition);
 
-    changePlayer();
-
     battleState = calculateBattleState();
 
-    return PutChessResult::SUCCESS;
+    changePlayer();
   }
 
   return result;
