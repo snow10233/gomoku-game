@@ -265,11 +265,11 @@ std::pair<int, int> Board::AIPutChess() {
     }
   }
 
-  std::cout << "aiScore: " << aiScore.first.first << "," << aiScore.first.second
-            << " " << aiScore.second << std::endl;
-  std::cout << "playerScore: " << playerScore.first.first << ","
-            << playerScore.first.second << " " << playerScore.second
-            << std::endl;
+  // std::cout << "aiScore: " << aiScore.first.first << "," << aiScore.first.second
+  //           << " " << aiScore.second << std::endl;
+  // std::cout << "playerScore: " << playerScore.first.first << ","
+  //           << playerScore.first.second << " " << playerScore.second
+  //           << std::endl;
 
   if (aiScore.second >= playerScore.second) {
     return aiScore.first;
