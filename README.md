@@ -78,7 +78,7 @@
 	    2. 悔棋 (可以無限悔棋)
 		    - py -> {TAKE_BACK} -> cpp
 		    - cpp -> {SUCCESS / INVALID} -> py 
-		    - cpp -> {SUCCESS / INVALID} -> py 
+		    - cpp -> {SUCCESS x y/ INVALID -1 -1} -> py (悔棋將返回悔的那一顆棋的x, y 前端直接根據這個調整畫面)
 	    3. 儲存 (下次再玩，暫時開放單人)
             - py -> {SAVE} -> cpp
             - cpp -> {SUCCESS / INVALID} -> py

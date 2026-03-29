@@ -180,12 +180,14 @@ PutChessResult Board::putChess(const int &xPosition, const int &yPosition) {
   return result;
 }
 
-bool Board::takeBackAMove() {
+bool Board::takeBackAMove(int &y, int &x) {
   if (!boardData.takeBackAMove()) {
     return false;
   }
 
-  board[lastlyChess.getY()][lastlyChess.getX()] = ChessPiece::EMPTY;
+  y = lastlyChess.getY();
+  x = lastlyChess.getX();
+  board[y][x] = ChessPiece::EMPTY;
 
   if (!boardData.steps.empty()) {
     auto temp = boardData.steps.top();

@@ -52,7 +52,7 @@ public:
 
   BattleResult getBattleState() const;
 
-  bool takeBackAMove();
+  bool takeBackAMove(int& x, int& y);
 
   void overTimeProcess();
 
