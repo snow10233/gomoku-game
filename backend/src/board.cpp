@@ -121,25 +121,6 @@ void Board::changePlayer() {
   }
 }
 
-PutChessResult Board::putChess(const int &xPosition, const int &yPosition) {
-  PutChessResult result = isChessPositionValid(xPosition, yPosition);
-
-  if (result == PutChessResult::SUCCESS) {
-    totalChesses++;
-    board[yPosition][xPosition] = whoPlay;
-    this->lastlyChess.setPosition(xPosition, yPosition);
-    boardData.putAChess(xPosition, yPosition);
-
-    changePlayer();
-
-    battleState = calculateBattleState();
-
-    return PutChessResult::SUCCESS;
-  }
-
-  return result;
-}
-
 PutChessResult Board::isChessPositionValid(const int &xPosition,
                                            const int &yPosition) const {
   if (!this->lastlyChess.isXValid(xPosition) ||
@@ -175,6 +156,25 @@ BattleResult Board::calculateBattleState() const {
   return BattleResult::CONTINUE;
 }
 
+PutChessResult Board::putChess(const int &xPosition, const int &yPosition) {
+  PutChessResult result = isChessPositionValid(xPosition, yPosition);
+
+  if (result == PutChessResult::SUCCESS) {
+    totalChesses++;
+    board[yPosition][xPosition] = whoPlay;
+    this->lastlyChess.setPosition(xPosition, yPosition);
+    boardData.putAChess(xPosition, yPosition);
+
+    changePlayer();
+
+    battleState = calculateBattleState();
+
+    return PutChessResult::SUCCESS;
+  }
+
+  return result;
+}
+
 bool Board::takeBackAMove() {
   if (!boardData.takeBackAMove()) {
     return false;
@@ -192,6 +192,17 @@ bool Board::takeBackAMove() {
   changePlayer();
   totalChesses--;
   return true;
+}
+
+// 將-1 -1寫入data做為佔位使用 後續進行存檔才不會亂
+void Board::overTimeProcess() {
+  changePlayer();
+
+  if (boardData.steps.empty()) {
+    return;
+  }
+
+  boardData.putAChess(-1, -1);
 }
 
 // std::pair<int, int> findBestChessPos(dualChessPieceVector vec, ChessPiece

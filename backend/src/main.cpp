@@ -30,7 +30,7 @@ int main() {
         }
         cout << "SUCCESS" << endl;
 
-        if (action == "PUTCHESS") {
+        if (action == "PUT_CHESS") {
           // CONSOLE_UI::showBoard(gameBoard);
 
           cin >> col >> row;
@@ -52,8 +52,11 @@ int main() {
           cout << "SUCCESS" << endl;
         } else if (action == "SAVE") {
           // 敬請期待
+        } else if (action == "OVER_TIME") {
+          gameBoard.overTimeProcess();
+          cout << "SUCCESS" << endl;
         }
-      } 
+      }
     } else if (gameMode == "TWO_PLAYER_MODE") {
       // 敬請期待
 

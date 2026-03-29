@@ -38,6 +38,9 @@ private:
 
   void changePlayer();
 
+  PutChessResult isChessPositionValid(const int &xPosition,
+                                      const int &yPosition) const;
+
 public:
   Board(int size = 15);
 
@@ -47,12 +50,11 @@ public:
 
   void resetBoard();
 
-  PutChessResult isChessPositionValid(const int &xPosition,
-                                      const int &yPosition) const;
-
   BattleResult getBattleState() const;
 
   bool takeBackAMove();
+
+  void overTimeProcess();
 
   // void AIPutChess();
 };
