@@ -121,13 +121,11 @@ void Board::changePlayer() {
   }
 }
 
-PutChessResult Board::isChessPositionValid(const int &xPosition,
-                                           const int &yPosition) const {
-  if (!this->lastlyChess.isXValid(xPosition) ||
-      !this->lastlyChess.isYValid(yPosition)) {
-    return PutChessResult::OVER_EDGE;
-  } else if (board[yPosition][xPosition] != ChessPiece::EMPTY) {
-    return PutChessResult::ALL_RIGHT_ONE;
+PutChessResult Board::isChessPositionValid(const int x, const int y) const {
+  if (!this->lastlyChess.isXValid(x) || !this->lastlyChess.isYValid(y)) {
+    return PutChessResult::OUT_BOUNDS;
+  } else if (board[y][x] != ChessPiece::EMPTY) {
+    return PutChessResult::OVERLAPPING;
   } else {
     return PutChessResult::SUCCESS;
   }
@@ -163,15 +161,14 @@ BattleResult Board::calculateBattleState() const {
   return BattleResult::CONTINUE;
 }
 
-PutChessResult Board::putChess(const int &xPosition, const int &yPosition) {
-  PutChessResult result = isChessPositionValid(xPosition, yPosition);
+PutChessResult Board::putChess(const int x, const int y) {
+  PutChessResult result = isChessPositionValid(x, y);
 
   if (result == PutChessResult::SUCCESS) {
     totalChesses++;
-    board[yPosition][xPosition] = whoPlay;
-    this->lastlyChess.setPosition(xPosition, yPosition);
-    boardData.putAChess(xPosition, yPosition);
-
+    board[y][x] = whoPlay;
+    this->lastlyChess.setPosition(x, y);
+    boardData.putAChess(x, y);
     battleState = calculateBattleState();
 
     changePlayer();
@@ -180,13 +177,13 @@ PutChessResult Board::putChess(const int &xPosition, const int &yPosition) {
   return result;
 }
 
-bool Board::takeBackAMove(int &y, int &x) {
+bool Board::takeBackAMove(int &x, int &y) {
   if (!boardData.takeBackAMove()) {
     return false;
   }
 
-  y = lastlyChess.getY();
   x = lastlyChess.getX();
+  y = lastlyChess.getY();
   board[y][x] = ChessPiece::EMPTY;
 
   if (!boardData.steps.empty()) {
@@ -212,32 +209,84 @@ void Board::overTimeProcess() {
   boardData.putAChess(-1, -1);
 }
 
-// std::pair<int, int> findBestChessPos(dualChessPieceVector vec, ChessPiece
-// player) {
-//   std::pair<int, int> pos, score;
-//   for(std::vector<ChessPiece>& v : vec) {
-//     for(ChessPiece c : v) {
-//       if(c == ChessPiece::EMPTY) {
-//         c = player;
-//
-//       }
-//     }
-//   }
-// }
-//
-// void Board::AIPutChess() {
-// }
+int AICalculateThisPosScore(Board &b) {
+  std::vector<int> lengths;
+
+  lengths.push_back(getHorizontalDistance(b));
+  lengths.push_back(getVerticalDistance(b));
+  lengths.push_back(getLeftDiagonalDistance(b));
+  lengths.push_back(getRightDiagonalDistance(b));
+
+  int score = 0;
+
+  // 1 -> 1, 2 -> 10, ...
+  for (int val : lengths) {
+    score += std::pow(10, val - 1);
+  }
+
+  return score;
+}
+
+std::pair<int, int> Board::AIPutChess() {
+  // 下棋
+  // 算分數
+  // 儲存最高分 & 位置
+  // 悔棋
+  AICalculatePair aiScore{std::pair<int, int>{0, 0}, 0};
+  AICalculatePair playerScore{std::pair<int, int>{0, 0}, 0};
+
+  for (int y = 0; y < sizeLimit; ++y) {
+    for (int x = 0; x < sizeLimit; ++x) {
+      if (board[y][x] == ChessPiece::EMPTY) {
+        int lastlyChessTempX = lastlyChess.getX();
+        int lastlyChessTempY = lastlyChess.getY();
+
+        std::pair<int, int> pos{x, y};
+        this->lastlyChess.setPosition(x, y);
+
+        board[y][x] = whoPlay;
+        int score = AICalculateThisPosScore(*this);
+        if (score > aiScore.second) {
+          aiScore = {pos, score};
+        }
+
+        changePlayer();
+
+        board[y][x] = whoPlay;
+        score = AICalculateThisPosScore(*this);
+        if (score > playerScore.second) {
+          playerScore = {pos, score};
+        }
+
+        changePlayer();
+        board[y][x] = ChessPiece::EMPTY;
+        this->lastlyChess.setPosition(lastlyChessTempX, lastlyChessTempY);
+      }
+    }
+  }
+
+  std::cout << "aiScore: " << aiScore.first.first << "," << aiScore.first.second
+            << " " << aiScore.second << std::endl;
+  std::cout << "playerScore: " << playerScore.first.first << ","
+            << playerScore.first.second << " " << playerScore.second
+            << std::endl;
+
+  if (aiScore.second >= playerScore.second) {
+    return aiScore.first;
+  }
+  return playerScore.first;
+}
 
 std::ostream &operator<<(std::ostream &os, const Board &b) {
   os << "   ";
-  for (int i = 0; i < b.board[0].size(); ++i) {
-    os << std::setw(2) << i << " ";
+  for (int y = 0; y < b.board[0].size(); ++y) {
+    os << std::setw(2) << y << " ";
   }
   os << std::endl;
-  for (int i = 0; i < b.board.size(); ++i) {
-    os << std::setw(2) << i;
-    for (int j = 0; j < b.board[0].size(); ++j) {
-      os << "  " << b.board[i][j];
+  for (int y = 0; y < b.sizeLimit; ++y) {
+    os << std::setw(2) << y;
+    for (int x = 0; x < b.sizeLimit; ++x) {
+      os << "  " << b.board[y][x];
     }
     os << std::endl;
   }
@@ -256,10 +305,10 @@ std::ostream &operator<<(std::ostream &os, const ChessPiece &c) {
 }
 
 std::ostream &operator<<(std::ostream &os, const PutChessResult &p) {
-  if (p == PutChessResult::ALL_RIGHT_ONE) {
-    os << "OVERIAPPING";
-  } else if (p == PutChessResult::OVER_EDGE) {
-    os << "OVER_EDGE";
+  if (p == PutChessResult::OVERLAPPING) {
+    os << "OVERLAPPING";
+  } else if (p == PutChessResult::OUT_BOUNDS) {
+    os << "OUT_BOUNDS";
   } else {
     os << "SUCCESS";
   }
@@ -268,9 +317,9 @@ std::ostream &operator<<(std::ostream &os, const PutChessResult &p) {
 
 std::ostream &operator<<(std::ostream &os, const BattleResult &b) {
   if (b == BattleResult::BLACK_WIN) {
-    os << "BLACK";
+    os << "BLACK_WIN";
   } else if (b == BattleResult::WHITE_WIN) {
-    os << "WHITE";
+    os << "WHITE_WIN";
   } else if (b == BattleResult::DRAW) {
     os << "DRAW";
   } else {
