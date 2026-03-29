@@ -9,7 +9,6 @@ int main() {
   Board gameBoard{boardSize};
   string gameMode;
   bool gameContinue = true;
-  int col = 0, row = 0;
   while (gameContinue) {
     cin >> gameMode;
 
@@ -33,6 +32,7 @@ int main() {
         if (action == "PUT_CHESS") {
           // CONSOLE_UI::showBoard(gameBoard);
 
+          int col = 0, row = 0;
           cin >> col >> row;
 
           if (!CONSOLE_UI::isInputValid()) {
@@ -43,7 +43,8 @@ int main() {
           PutChessResult putChessResultState = gameBoard.putChess(row, col);
           BattleResult boardState = gameBoard.getBattleState();
 
-          cout << putChessResultState << " " << boardState << endl;
+          cout << putChessResultState << " " << boardState << " " << 0 << " "
+               << 0 << endl;
         } else if (action == "TAKE_BACK") {
           if (!gameBoard.takeBackAMove()) {
             cout << "INVALID" << endl;
