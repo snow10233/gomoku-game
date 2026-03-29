@@ -47,4 +47,4 @@ jobs:
     - name: 🔍 步驟 4：基本語法防呆檢查
       working-directory: ./frontend
       # py_compile 會幫你檢查有沒有少寫冒號、括號不對稱等致命語法錯誤
-      run: python -m py_compile main.py engine_bridge.py
+      run: python -m compileall .
