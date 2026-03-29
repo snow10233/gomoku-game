@@ -53,6 +53,7 @@
 	- {A / B} : 成功輸出A 失敗輸出B
 	- 由上而下依序通訊
 	- 多個資料用一個空格隔開
+    - 連續兩次回傳 {SUCCESS / INVALID} : 第一次為輸入是否正確符合格式 第二次為具體操作是否成功
 
 - 流程指令說明
 	1. 選擇模式  
@@ -70,20 +71,28 @@
 		    - cpp -> {SUCCESS / INVALID} -> py
 	2. 遊玩過程
 	    1. 下棋 (相互通訊x, y) 
-		    - py ->{PUTCHESS} -> cpp
+		    - py ->{PUT_CHESS} -> cpp
 		    - cpp -> {SUCCESS / INVALID} -> py
 		    - py -> {x y} -> cpp
 	        - cpp -> {PUTRESULT BOARDSTATE AI's x AI's y / INVALID CONTINUE -1 -1} -> py
 	    2. 悔棋 (可以無限悔棋)
 		    - py -> {TAKE_BACK} -> cpp
-		    - cpp -> {SUCCESS / INVALID} -> py
+		    - cpp -> {SUCCESS / INVALID} -> py 
+		    - cpp -> {SUCCESS / INVALID} -> py 
 	    3. 儲存 (下次再玩，暫時開放單人)
-			- py -> {SAVE} -> cpp
-			- cpp -> {SUCCESS / INVALID}  -> py
+            - py -> {SAVE} -> cpp
+            - cpp -> {SUCCESS / INVALID} -> py
+		    - cpp -> {SUCCESS / INVALID} -> py
+        4. 超時 (換人下)
+            - py -> {OVER_TIME} -> cpp
+            - cpp -> {SUCCESS / INVALID} -> py
+		    - cpp -> {SUCCESS / INVALID} -> py
 	3. 遊戲結束
 	     1. 分享 (輸出 `chessBattleResultData.txt` 檔案 暫定為PGN格式 `{{x,y}, {x,y},...}`)
-	        - py -> {SHARE} -> cpp
-	        - cpp -> {SUCCESS / INVALID} -> py
+            - py -> {SHARE} -> cpp
+            - cpp -> {SUCCESS / INVALID} -> py
+		    - cpp -> {SUCCESS / INVALID} -> py
 	     2. 回到主選單 (回到步驟1)
-		    - py -> {HOME_PAGE} -> cpp
+            - py -> {HOME_PAGE} -> cpp
+            - cpp -> {SUCCESS / INVALID} -> py
 		    - cpp -> {SUCCESS / INVALID} -> py

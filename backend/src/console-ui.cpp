@@ -59,5 +59,6 @@ bool CONSOLE_UI::isGameActionInputValid(std::string &action) {
   if (!isInputValid()) {
     return false;
   }
-  return action == "PUTCHESS" || action == "TAKE_BACK" || action == "SAVE";
+  return action == "PUT_CHESS" || action == "TAKE_BACK" || action == "SAVE" ||
+         action == "OVER_TIME";
 }
