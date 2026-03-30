@@ -1,9 +1,7 @@
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QPushButton,
     QLabel,
-    QMessageBox,
     QDialog,
 )
 from PySide6.QtCore import Qt, Signal
@@ -28,13 +26,15 @@ class MultiplayerPage(QWidget):
 
         title = QLabel("雙人連線模式 (P2P)")
         title.setStyleSheet(
-            "background-color: #4f4f4f;"
-            " color: white;"
-            " font-size: 40px;"
-            " font-weight: bold;"
-            " min-height: 70px;"
-            " min-width: 500px;"
-            " border-radius: 10px;"
+            """
+            background-color: #4f4f4f;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            min-height: 70px;
+            min-width: 500px;
+            border-radius: 10px;
+            """
         )
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addWidget(title)

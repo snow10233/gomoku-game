@@ -2,7 +2,6 @@ from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QMessageBox,
 )
 from PySide6.QtCore import Qt, Signal
 from core.engine import GomokuEngine
@@ -20,8 +19,6 @@ class GamePage(QWidget):
 
         main_layout = QVBoxLayout(self)
         main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        main_layout.setSpacing(20)
-
         # --- 頂部時間 & 玩家棋子 ---
         top_layout = QHBoxLayout()
         top_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
