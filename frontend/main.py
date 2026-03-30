@@ -1,61 +1,53 @@
-import pygame
 import sys
-from core.engine_bridge import GomokuEngine
-from ui.gomoku_window import Window
-from settings import BOARD_SIZE
-from ui.timer import Timer
+from PySide6.QtWidgets import QApplication, QMainWindow, QStackedWidget
+from settings import WINDOW_WIDTH, WINDOW_HEIGHT
+from ui.home_page import HomePage
+from ui.game_page import GamePage  # 🌟 引入我們做好的遊戲頁面
+from ui.multi_page import MultiplayerPage  # 🌟 引入我們的新頁面
 
-def main():
-    # === 初始化 Pygame ===
-    pygame.init()
-    engine = GomokuEngine()
-    window = Window()
-    timer = Timer()
-    clock = pygame.time.Clock()
-    current_player = 1 # 0=空, 1=黑, 2=白
 
-    # 測試用 先不加進主迴圈
-    engine.send_game_mode("AI_MODE")
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("C++ Gomoku Qt Edition")
+        self.setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT)
 
-    # === 遊戲主迴圈 ===
-    running = True
-    while running:
-        window.draw_board()
-        window.draw_chess()
+        self.stacked_widget = QStackedWidget()
+        self.setCentralWidget(self.stacked_widget)
 
-        remaining_time = timer.get_remain_time()# 算出剩下幾秒
+        self.home_page = HomePage()
+        self.game_page = GamePage()  # 🌟 實例化遊戲頁面
+        self.multi_page = MultiplayerPage()  # 🌟 實例化多人在線頁面
 
-        # 檢查是否超時
-        if remaining_time <= 0:
-            print(f"玩家 {current_player} 超時！自動換對手下棋。")
-            current_player = 2 if current_player == 1 else 1
-            timer.reset()
+        self.stacked_widget.addWidget(self.home_page)  # Index 0
+        self.stacked_widget.addWidget(self.game_page)  # Index 1
+        self.stacked_widget.addWidget(self.multi_page)  # Index 2
 
-        window.draw_timer(remaining_time, current_player)
+        # 🌟 綁定所有的頁面跳轉邏輯
+        self.home_page.request_single_player.connect(self.go_to_game_page)
+        self.home_page.request_multiplayer.connect(
+            self.go_to_multi_page
+        )  # 首頁 -> 雙人頁面
 
-        pygame.display.flip() # 更新畫面
-        clock.tick(60)
+        self.game_page.request_home.connect(self.go_to_home_page)  # 遊戲 -> 首頁
+        self.multi_page.request_home.connect(self.go_to_home_page)  # 雙人 -> 首頁
 
-        # 監聽玩家的動作
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            
-            # 當玩家點擊滑鼠左鍵
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                x, y = event.pos
-                col, row = window.get_chess_pos(x, y)
-                
-                # 檢查有沒有點在棋盤的合法範圍內
-                if window.is_pos_valid(col, row):
-                    print(f"前端抓到點擊！ 行(row)={row}, 列(col)={col}")
-                    engine.send_action("PUT_CHESS")
-                    res, state, ai_x, ai_y = engine.put_chess(row, col)
-                    print(f"後端說：落子{res}, 目前狀態{state}, AI下({ai_x}, {ai_y})")
-                    window.put_chess_in_screen(col, row, current_player)
-                    current_player = 2 if current_player == 1 else 1
-                    timer.reset()
+    def go_to_game_page(self):
+        print("切換至遊戲畫面，發送 {AI_MODE}")
+        self.stacked_widget.setCurrentIndex(1)
+        self.game_page.start_game()  # 🌟 切換過去時，順便啟動計時器和清空棋盤
+
+    def go_to_multi_page(self):
+        """切換到雙人模式子選單"""
+        self.stacked_widget.setCurrentIndex(2)
+        
+    def go_to_home_page(self):
+        print("切換回主選單，發送 {HOME_PAGE}")
+        self.stacked_widget.setCurrentIndex(0)
+
 
 if __name__ == "__main__":
-    main()
-    sys.exit()
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
