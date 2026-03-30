@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, Signal
 from core.engine import GomokuEngine
-from ui.components import GameTimerLabel, GomokuBoard, GameButton, AlartDialog
+from ui.components import GameTimerLabel, GomokuBoard, GameButton, AlertDialog
 
 
 class GamePage(QWidget):
@@ -114,8 +114,8 @@ class GamePage(QWidget):
             self.timer_label.reset()
         else:
             print("無法悔棋")
-            alart = AlartDialog("無法悔棋！(已經退回原點)", self)
-            alart.exec()
+            alert = AlertDialog("無法悔棋！(已經退回原點)", self)
+            alert.exec()
 
     def handle_reset(self):
         """處理玩家按下RESET按鈕的邏輯"""

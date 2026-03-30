@@ -4,4 +4,4 @@ from .input_dialog import InputDialog
 from .menu_button import MenuButton
 from .wip_dialog import WipDialog
 from .game_button import GameButton
-from .alart_dialog import AlartDialog
+from .alert_dialog import AlertDialog
