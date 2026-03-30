@@ -6,8 +6,8 @@ from PySide6.QtWidgets import (
     QMessageBox,
 )
 from PySide6.QtCore import Qt, Signal
-from ui.components import GomokuBoard, GameTimerLabel
 from core.engine import GomokuEngine
+from ui.components import GameTimerLabel, GomokuBoard
 
 
 class GamePage(QWidget):
