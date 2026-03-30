@@ -120,7 +120,7 @@ class GamePage(QWidget):
 
         response = self.engine.send_command("RESET")
         if response == "SUCCESS":
-            print("C++ 已切換至 AI_MODE")
+            print("成功重置")
 
         self.board_widget.board = [[0 for _ in range(15)] for _ in range(15)]
         self.board_widget.update()
