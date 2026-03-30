@@ -7,11 +7,13 @@ class GameTimerLabel(QLabel):
     def __init__(self):
         super().__init__()
         self.setStyleSheet(
-            "background-color: green;"
-            "color: black;"
-            "min-wdith: 250px"
-            "font-size: 50px;"
-            "font-weight: bold;"
+            """
+            background-color: green;
+            color: black;
+            min-width: 250px;
+            font-size: 50px;
+            font-weight: bold;
+            """
         )
         self.remaining_time = TIME_LIMIT
         self.timer = QTimer(self)
