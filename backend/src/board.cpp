@@ -222,14 +222,8 @@ std::pair<int, int> Board::takeBackAMove() {
 // 將-1 -1寫入data做為佔位使用 後續進行存檔才不會亂
 void Board::overTimeProcess() {
   changePlayer();
-
-  if (boardData.steps.empty()) {
-    return;
-  }
-
   boardData.putAChess(-1, -1);
 }
-
 
 int getThisPosScore(Board &b) {
   std::vector<int> lengths;
