@@ -7,6 +7,7 @@ from ui.pages import HomePage, GamePage, MultiplayerPage
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setStyleSheet("QWidget { background-color: #ccb897; }")
         self.setWindowTitle("C++ Gomoku Qt Edition")
         self.setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT)
 
@@ -35,12 +36,12 @@ class MainWindow(QMainWindow):
         self.game_page.start_game()  # 🌟 切換過去時，順便啟動計時器和清空棋盤
 
     def go_to_multi_page(self):
-        """切換到雙人模式子選單"""
         self.stacked_widget.setCurrentIndex(2)
 
     def go_to_home_page(self):
         print("切換回主選單，發送 {HOME_PAGE}")
         self.stacked_widget.setCurrentIndex(0)
+        self.game_page.end_game()
 
 
 if __name__ == "__main__":

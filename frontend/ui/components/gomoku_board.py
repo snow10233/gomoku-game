@@ -63,7 +63,7 @@ class GomokuBoard(QWidget):
                     painter.drawEllipse(x - radius, y - radius, radius * 2, radius * 2)
 
     def mouseMoveEvent(self, event):
-        """🌟 魔法 3：計算滑鼠懸停格點"""
+        """計算滑鼠懸停格點"""
         # 計算滑鼠最靠近哪一個交叉點
         col = round((event.x() - MARGIN) / GRID_SIZE)
         row = round((event.y() - MARGIN) / GRID_SIZE)
@@ -82,7 +82,7 @@ class GomokuBoard(QWidget):
                 self.update()
 
     def leaveEvent(self, event):
-        """🌟 魔法 4：當滑鼠離開整個棋盤元件時，清除投影"""
+        """當滑鼠離開整個棋盤元件時，清除投影"""
         self.hover_pos = None
         self.update()
 

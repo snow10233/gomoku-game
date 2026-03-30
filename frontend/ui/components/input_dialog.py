@@ -15,20 +15,29 @@ class InputDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle(title)
         self.setFixedSize(300, 150)
-        self.setStyleSheet("QDialog { background-color: #2b2b2b; }")
+        self.setStyleSheet("QDialog { background-color: white; }")
 
         layout = QVBoxLayout(self)
 
         self.label = QLabel(prompt)
-        self.label.setStyleSheet("color: white; font-size: 16px; font-weight: bold;")
+        self.label.setStyleSheet(
+            "background-color: white;"
+            " color: black;"
+            " font-size: 16px;"
+            " font-weight: bold;"
+        )
         layout.addWidget(self.label)
 
         self.input_box = QLineEdit()
         self.input_box.setStyleSheet(
             """
             QLineEdit {
-                background-color: #1e1e1e; color: white; 
-                border: 2px solid #555; border-radius: 5px; padding: 5px; font-size: 16px;
+                background-color: white;
+                color: black; 
+                border: 2px solid #555;
+                border-radius: 5px;
+                padding: 5px;
+                font-size: 16px;
             }
             QLineEdit:focus { border: 2px solid #4CAF50; }
         """
@@ -40,7 +49,14 @@ class InputDialog(QDialog):
         self.btn_cancel = QPushButton("取消")
 
         btn_style = """
-            QPushButton { background-color: #4CAF50; color: white; border-radius: 5px; padding: 8px; font-size: 14px; font-weight: bold; }
+            QPushButton { 
+                background-color: #4CAF50;
+                color: white;
+                border-radius: 5px;
+                padding: 8px;
+                font-size: 14px;
+                font-weight: bold;
+            }
             QPushButton:hover { background-color: #45a049; }
         """
         self.btn_confirm.setStyleSheet(btn_style)
