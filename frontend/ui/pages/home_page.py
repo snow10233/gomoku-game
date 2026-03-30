@@ -27,12 +27,16 @@ class HomePage(QWidget):
         # 標題
         title = QLabel("五子棋 Gomoku Demo")
         title.setStyleSheet(
-            "background-color: #4f4f4f;"
-            " color: white; font-size: 40px;"
-            " font-weight: bold;"
-            " min-height: 70px;"
-            " min-width: 500px;"
-            " border-radius: 10px;"
+            """
+            qproperty-alignment: 'AlignCenter';
+            background-color: #4f4f4f;
+            color: white; 
+            font-size: 40px;
+            font-weight: bold;
+            min-height: 70px;
+            min-width: 500px;
+            border-radius: 10px;
+            """
         )
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addWidget(title)

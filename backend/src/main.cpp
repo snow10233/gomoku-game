@@ -82,7 +82,6 @@ int main() {
           // CONSOLE_UI::showBoard(gameBoard);
         } else if (action == "OVER_TIME") {
           gameBoard.overTimeProcess();
-          cout << "SUCCESS" << endl;
 
           pair<int, int> aiPos = gameBoard.aiFindBestPos();
           PutChessResult putChessResultState =

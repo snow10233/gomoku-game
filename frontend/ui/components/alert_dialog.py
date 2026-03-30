@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QMessageBox
 
 
-class AlartDialog(QMessageBox):
+class AlertDialog(QMessageBox):
     def __init__(self, text="請輸入文本", parent=None):
         super().__init__(parent)
         self.setWindowTitle("警告")
@@ -14,5 +14,5 @@ class AlartDialog(QMessageBox):
             QLabel { background-color: white; color: black; min-width: 300px; min-height: 80px; font-size: 18px; font-weight: bold; }
             QPushButton { background-color: #c9c9c9; color: black; border-radius: 5px; padding: 8px 20px; font-size: 16px; }
             QPushButton:hover { background-color: #a19f9f; }
-        """
+            """
         )
