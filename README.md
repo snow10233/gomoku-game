@@ -1,6 +1,6 @@
 # 五子棋 project
 
-### 已實現功能進度表
+### 功能進度表
 ~~顯示 15×15 之標準棋盤~~
 
 ~~黑子 (先行)與白子兩邊輪流下棋於點上~~
@@ -35,13 +35,13 @@
 #### python
 > 使用venv避免汙染全局環境
 1. 確定WSL已安裝venv
-2. command : `python3 -m venv .venv` + `source venv/bin/activate`
-3. 確定最左邊出現 (venv) 
-4. 根據需求新增對應library到虛擬環境中 `pip install ...`
+2. command : `python3 -m venv .venv` + `source .venv/bin/activate`
+3. 確定command最左邊出現 (.venv)
+5. command : `pip install -r requirement.txt`
 
 ---
 ### 功能測試流程
-1. 輸入 `source venv/bin/activate` 進入venv
+1. 輸入 `source .venv/bin/activate` 進入.venv
 2. 進入 `backend/build` 輸入 `make`
 3. 進入 `frontend` 輸入 `python3 main.py`
 
