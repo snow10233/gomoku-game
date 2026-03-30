@@ -61,6 +61,7 @@ Board::Board(int size) {
   sizeLimit = size;
   totalChesses = 0;
   whoPlay = ChessPiece::BLACK;
+  lastlyChess.resetChess();
   lastlyChess.setXLimit(0, size - 1);
   lastlyChess.setYLimit(0, size - 1);
   for (int i = 0; i < size; i++) {
@@ -170,6 +171,10 @@ int getRightDiagonalDistance(const Board &b1) {
 }
 
 void Board::resetBoard() {
+  battleState = BattleResult::CONTINUE;
+  totalChesses = 0;
+  whoPlay = ChessPiece::BLACK;
+  lastlyChess.resetChess();
   for (std::vector<ChessPiece> &line : this->board) {
     for (ChessPiece &c : line) {
       c = ChessPiece::EMPTY;
