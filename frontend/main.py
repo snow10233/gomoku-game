@@ -1,14 +1,13 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QStackedWidget
 from settings import WINDOW_WIDTH, WINDOW_HEIGHT
-from ui.home_page import HomePage
-from ui.game_page import GamePage  # 🌟 引入我們做好的遊戲頁面
-from ui.multi_page import MultiplayerPage  # 🌟 引入我們的新頁面
+from ui.pages import HomePage, GamePage, MultiplayerPage
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setStyleSheet("QWidget { background-color: #ccb897; }")
         self.setWindowTitle("C++ Gomoku Qt Edition")
         self.setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT)
 
@@ -25,11 +24,10 @@ class MainWindow(QMainWindow):
 
         # 🌟 綁定所有的頁面跳轉邏輯
         self.home_page.request_single_player.connect(self.go_to_game_page)
-        self.home_page.request_multiplayer.connect(
-            self.go_to_multi_page
-        )  # 首頁 -> 雙人頁面
+        self.home_page.request_multiplayer.connect(self.go_to_multi_page)
 
         self.game_page.request_home.connect(self.go_to_home_page)  # 遊戲 -> 首頁
+
         self.multi_page.request_home.connect(self.go_to_home_page)  # 雙人 -> 首頁
 
     def go_to_game_page(self):
@@ -38,12 +36,12 @@ class MainWindow(QMainWindow):
         self.game_page.start_game()  # 🌟 切換過去時，順便啟動計時器和清空棋盤
 
     def go_to_multi_page(self):
-        """切換到雙人模式子選單"""
         self.stacked_widget.setCurrentIndex(2)
-        
+
     def go_to_home_page(self):
         print("切換回主選單，發送 {HOME_PAGE}")
         self.stacked_widget.setCurrentIndex(0)
+        self.game_page.end_game()
 
 
 if __name__ == "__main__":
