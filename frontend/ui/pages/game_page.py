@@ -2,12 +2,11 @@ from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QPushButton,
     QMessageBox,
 )
 from PySide6.QtCore import Qt, Signal
 from core.engine import GomokuEngine
-from ui.components import GameTimerLabel, GomokuBoard
+from ui.components import GameTimerLabel, GomokuBoard, GameButton, AlartDialog
 
 
 class GamePage(QWidget):
@@ -19,43 +18,53 @@ class GamePage(QWidget):
 
         self.engine = GomokuEngine()
 
-        self.setStyleSheet("QWidget { background-color: #1e1e1e; }")
-        layout = QVBoxLayout(self)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout = QVBoxLayout(self)
+        main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.setSpacing(20)
 
-        # --- 頂部控制列 ---
+        # --- 頂部時間 & 玩家棋子 ---
         top_layout = QHBoxLayout()
-
-        self.btn_back = QPushButton("⬅ 回到主選單")
-        self.btn_back.setFixedSize(150, 40)
-        self.btn_back.setStyleSheet(
-            "background-color: #f44336; color: white; border-radius: 5px; font-weight: bold;"
-        )
-        self.btn_back.clicked.connect(self.request_home.emit)  # 點擊時發射回首頁信號
+        top_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        top_layout.setSpacing(20)
 
         self.timer_label = GameTimerLabel()
-
-        self.btn_undo = QPushButton("↺ 悔棋")
-        self.btn_undo.setFixedSize(100, 40)
-        self.btn_undo.setStyleSheet(
-            "background-color: #FF9800; color: white; border-radius: 5px; font-weight: bold;"
-        )
-        self.btn_undo.clicked.connect(self.handle_undo)  # 點擊時發射回首頁信號
-
-        top_layout.addWidget(self.btn_back)
-        top_layout.addStretch()  # 把計時器推到中間
         top_layout.addWidget(self.timer_label)
-        top_layout.addStretch()  # 把悔棋推到右邊
-        top_layout.addWidget(self.btn_undo)
 
-        layout.addLayout(top_layout)
+        main_layout.addLayout(top_layout)
+
+        # --- 下方功能區塊 ---
+        bottom_layout = QHBoxLayout()
+        bottom_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        bottom_layout.setSpacing(20)
 
         # --- 棋盤區塊 ---
         self.board_widget = GomokuBoard()
-        layout.addWidget(self.board_widget)
+        bottom_layout.addWidget(self.board_widget)
 
-        # 🌟 綁定到真正的引擎溝通函式
-        self.board_widget.clicked_pos.connect(self.handle_user_move)
+        # --- 右側功能欄位 ---
+
+        bottom_right_layout = QVBoxLayout()
+        bottom_right_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        bottom_right_layout.setSpacing(20)
+
+        self.btn_undo = GameButton("悔棋", self)
+        self.btn_reset = GameButton("重置棋盤", self)
+        self.btn_back = GameButton("回到主選單", self)
+
+        bottom_right_layout.addWidget(self.btn_undo)
+        bottom_right_layout.addWidget(self.btn_reset)
+        bottom_right_layout.addWidget(self.btn_back)
+
+        bottom_layout.addLayout(bottom_right_layout)
+
+        main_layout.addLayout(bottom_layout)
+
+        self.board_widget.clicked_pos.connect(
+            self.handle_user_move
+        )  # 綁定到真正的引擎溝通函式
+        self.btn_reset.clicked.connect(self.handle_reset)  # 點擊時發射回首頁信號
+        self.btn_undo.clicked.connect(self.handle_undo)  # 點擊時發射回首頁信號
+        self.btn_back.clicked.connect(self.request_home.emit)  # 點擊時發射回首頁信號
 
     def handle_user_move(self, col, row):
         """玩家點擊棋盤時觸發的真正邏輯"""
@@ -92,15 +101,7 @@ class GamePage(QWidget):
         success, undo_positions = self.engine.take_back()
 
         if success:
-            if not undo_positions:
-                # 雖然 C++ 說 SUCCESS，但沒傳座標回來 (防呆機制)
-                QMessageBox.warning(
-                    self, "提示", "目前沒有棋子可以悔！", QMessageBox.StandardButton.Ok
-                )
-                return
-
             print(f"悔棋成功，C++ 指示移除座標：{undo_positions}")
-
             # 🌟 根據 C++ 傳回來的座標，精準拔除棋盤上的棋子
             for x, y in undo_positions:
                 if 0 <= x < 15 and 0 <= y < 15:  # 座標防呆
@@ -111,15 +112,22 @@ class GamePage(QWidget):
 
             # 悔棋後，輪到玩家重新思考，所以計時器要重置
             self.timer_label.reset()
-
         else:
-            print("無法悔棋 (C++ 回傳 INVALID)")
-            QMessageBox.warning(
-                self,
-                "提示",
-                "無法悔棋！(可能已經退回原點)",
-                QMessageBox.StandardButton.Ok,
-            )
+            print("無法悔棋")
+            alart = AlartDialog("無法悔棋！(已經退回原點)", self)
+            alart.exec()
+
+    def handle_reset(self):
+        """處理玩家按下RESET按鈕的邏輯"""
+        print("玩家要求悔棋，發送 {RESET}")
+
+        response = self.engine.send_command("RESET")
+        if response == "SUCCESS":
+            print("C++ 已切換至 AI_MODE")
+
+        self.board_widget.board = [[0 for _ in range(15)] for _ in range(15)]
+        self.board_widget.update()
+        self.timer_label.start_timer()
 
     def start_game(self):
         """當從首頁切換過來時，呼叫這個來初始化"""
@@ -131,3 +139,9 @@ class GamePage(QWidget):
         self.board_widget.board = [[0 for _ in range(15)] for _ in range(15)]
         self.board_widget.update()
         self.timer_label.start_timer()
+
+    def end_game(self):
+        """當切換回首頁時，呼叫這個來清空棋盤"""
+        response = self.engine.send_command("HOME_PAGE")
+        if response == "SUCCESS":
+            print("C++ 已切換至 HOME_PAGE")

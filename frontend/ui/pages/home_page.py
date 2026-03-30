@@ -14,17 +14,28 @@ class HomePage(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.setStyleSheet("QWidget { background-color: #2b2b2b; }")
 
-        layout = QVBoxLayout(self)
+        main_layout = QVBoxLayout(self)
+        main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.setSpacing(30)
+
+        # 設定排版
+        layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.setSpacing(20)
 
         # 標題
-        title = QLabel("五子棋 Gomoku Pro")
-        title.setStyleSheet("color: white; font-size: 36px; font-weight: bold;")
+        title = QLabel("五子棋 Gomoku Demo")
+        title.setStyleSheet(
+            "background-color: #4f4f4f;"
+            " color: white; font-size: 40px;"
+            " font-weight: bold;"
+            " min-height: 70px;"
+            " min-width: 500px;"
+            " border-radius: 10px;"
+        )
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(title)
+        main_layout.addWidget(title)
 
         # 建立按鈕
         self.btn_single = MenuButton("單人模式 (AI)", self)
@@ -32,10 +43,13 @@ class HomePage(QWidget):
         self.btn_load = MenuButton("載入棋局", self)
         self.btn_replay = MenuButton("回放棋局", self)
 
+        # 添加按鈕
         layout.addWidget(self.btn_single)
         layout.addWidget(self.btn_multi)
         layout.addWidget(self.btn_load)
         layout.addWidget(self.btn_replay)
+
+        main_layout.addLayout(layout)
 
         # 綁定按鈕事件
         self.btn_single.clicked.connect(self.request_single_player.emit)
