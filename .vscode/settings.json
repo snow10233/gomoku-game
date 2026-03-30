@@ -27,5 +27,6 @@
         "editor.formatOnSave": true
     },
     "python-envs.defaultEnvManager": "ms-python.python:system",
-    "cmake.sourceDirectory": "/home/snow/code/gomoku-game/backend"
+    "cmake.sourceDirectory": "/home/snow/code/gomoku-game/backend",
+    "cmake.buildDirectory": "${workspaceFolder}/backend/build"
 }
