@@ -8,11 +8,14 @@ class GameTimerLabel(QLabel):
         super().__init__()
         self.setStyleSheet(
             """
-            background-color: green;
-            color: black;
-            min-width: 250px;
-            font-size: 50px;
+            qproperty-alignment: 'AlignCenter';
+            background-color: #4f4f4f;
+            color: white; 
+            font-size: 40px;
             font-weight: bold;
+            max-height: 70px;
+            min-width: 400px;
+            border-radius: 10px;
             """
         )
         self.remaining_time = TIME_LIMIT
