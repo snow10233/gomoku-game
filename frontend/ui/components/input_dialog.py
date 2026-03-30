@@ -21,10 +21,12 @@ class InputDialog(QDialog):
 
         self.label = QLabel(prompt)
         self.label.setStyleSheet(
-            "background-color: white;"
-            " color: black;"
-            " font-size: 16px;"
-            " font-weight: bold;"
+            """
+            background-color: white;
+            color: black;
+            font-size: 16px;
+            font-weight: bold;
+            """
         )
         layout.addWidget(self.label)
 
@@ -40,7 +42,7 @@ class InputDialog(QDialog):
                 font-size: 16px;
             }
             QLineEdit:focus { border: 2px solid #4CAF50; }
-        """
+            """
         )
         layout.addWidget(self.input_box)
 
@@ -58,7 +60,7 @@ class InputDialog(QDialog):
                 font-weight: bold;
             }
             QPushButton:hover { background-color: #45a049; }
-        """
+            """
         self.btn_confirm.setStyleSheet(btn_style)
         self.btn_cancel.setStyleSheet(
             btn_style.replace("#4CAF50", "#f44336").replace("#45a049", "#da190b")

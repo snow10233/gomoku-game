@@ -14,5 +14,5 @@ class MenuButton(QPushButton):
                 font-size: 18px;
             }
             QPushButton:hover { background-color: #45a049; }
-        """
+            """
         )
