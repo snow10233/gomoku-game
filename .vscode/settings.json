@@ -21,5 +21,11 @@
     },
     "editor.formatOnSave": true,
     "C_Cpp.intelliSenseEngine": "disabled",
-    "C_Cpp.default.compilerPath": "/usr/bin/g++"
+    "C_Cpp.default.compilerPath": "/usr/bin/g++",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter", // 記得安裝Black Formatter
+        "editor.formatOnSave": true
+    },
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "cmake.sourceDirectory": "/home/snow/code/gomoku-game/backend"
 }
