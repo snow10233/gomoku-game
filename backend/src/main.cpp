@@ -6,7 +6,6 @@ using namespace std;
 const int boardSize = 15;
 
 int main() {
-  Board gameBoard{boardSize};
   string gameMode;
   bool gameContinue = true;
   while (gameContinue) {
@@ -20,6 +19,7 @@ int main() {
 
     if (gameMode == "AI_MODE") {
       string action;
+      Board gameBoard{boardSize};
       while (true) {
         cin >> action;
 
@@ -96,6 +96,10 @@ int main() {
           cout << aiPos.second << endl;
         } else if (action == "SAVE") {
           // 敬請期待
+        } else if (action == "HOME_PAGE") {
+          break;
+        } else if (action == "RESET") {
+          gameBoard.resetBoard();
         }
       }
     } else if (gameMode == "TWO_PLAYER_MODE") {
