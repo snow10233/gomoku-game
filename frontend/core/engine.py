@@ -69,7 +69,7 @@ class GomokuEngine:
         # 1. 傳送指令並讀取第一次確認
         status = self.send_command("TAKE_BACK")
         if status != "SUCCESS":
-            return False, undo_positions  # C++ 拒絕悔棋 (可能是剛開局還沒下)
+            return False, []  # C++ 拒絕悔棋 (可能是剛開局還沒下)
 
         undo_positions = []
 
