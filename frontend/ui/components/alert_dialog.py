@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QMessageBox
 
 
-class AlartDialog(QMessageBox):
+class AlertDialog(QMessageBox):
     def __init__(self, text="請輸入文本", parent=None):
         super().__init__(parent)
         self.setWindowTitle("警告")
