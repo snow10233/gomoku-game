@@ -14,20 +14,21 @@ class GamePage(QWidget):
 
     def __init__(self):
         super().__init__()
-
         self.engine = GomokuEngine()
 
+        # --- 總功能區塊 ---
         main_layout = QVBoxLayout(self)
         main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        # --- 頂部時間 & 玩家棋子 ---
+
+        # --- 頂部功能區塊 ---
         top_layout = QHBoxLayout()
         top_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         top_layout.setSpacing(20)
 
+        # --- 時間 ---
         self.timer_label = GameTimerLabel()
-        top_layout.addWidget(self.timer_label)
 
-        main_layout.addLayout(top_layout)
+        # --- 玩家棋子 ---
 
         # --- 下方功能區塊 ---
         bottom_layout = QHBoxLayout()
@@ -36,14 +37,13 @@ class GamePage(QWidget):
 
         # --- 棋盤區塊 ---
         self.board_widget = GomokuBoard()
-        bottom_layout.addWidget(self.board_widget)
 
         # --- 右側功能欄位 ---
-
         bottom_right_layout = QVBoxLayout()
         bottom_right_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         bottom_right_layout.setSpacing(20)
 
+        # --- 按鈕設置 ---
         self.btn_undo = GameButton("悔棋", self)
         self.btn_reset = GameButton("重置棋盤", self)
         self.btn_back = GameButton("回到主選單", self)
@@ -52,16 +52,39 @@ class GamePage(QWidget):
         bottom_right_layout.addWidget(self.btn_reset)
         bottom_right_layout.addWidget(self.btn_back)
 
+        # --- 組合 ---
+        top_layout.addWidget(self.timer_label)
+
+        bottom_layout.addWidget(self.board_widget)
         bottom_layout.addLayout(bottom_right_layout)
 
+        main_layout.addLayout(top_layout)
         main_layout.addLayout(bottom_layout)
 
-        self.board_widget.clicked_pos.connect(
-            self.handle_user_move
-        )  # 綁定到真正的引擎溝通函式
-        self.btn_reset.clicked.connect(self.handle_reset)  # 點擊時發射回首頁信號
-        self.btn_undo.clicked.connect(self.handle_undo)  # 點擊時發射回首頁信號
-        self.btn_back.clicked.connect(self.request_home.emit)  # 點擊時發射回首頁信號
+        # --- 功能設定 ---
+        self.board_widget.clicked_pos.connect(self.handle_user_move)
+        self.timer_label.time_out.connect(self.handle_time_out)
+        self.btn_reset.clicked.connect(self.handle_reset)
+        self.btn_undo.clicked.connect(self.handle_undo)
+        self.btn_back.clicked.connect(self.request_home.emit)
+
+    def handle_time_out(self):
+        print("前端發現超時！準備聯絡 C++ 引擎處理換人...")
+        print("發送 {OVER_TIME}")
+
+        # 呼叫我們剛剛在 Engine 寫好的函式
+        put_result, board_state, ai_x, ai_y = self.engine.over_time()
+
+        if put_result == "SUCCESS":
+            # 幫 AI 落子
+            self.board_widget.board[ai_y][ai_x] = 2
+
+            # 畫面重繪
+            self.board_widget.update()
+            self.timer_label.reset()
+        else:
+            print("C++ 引擎拒絕了這步棋！")
+        
 
     def handle_user_move(self, col, row):
         """玩家點擊棋盤時觸發的真正邏輯"""
@@ -77,7 +100,7 @@ class GamePage(QWidget):
             # 1. 玩家落子成功，更新本機陣列
             self.board_widget.board[row][col] = 1  # 黑子
 
-            # 2. 如果 AI 有回傳座標，幫 AI 落子
+            # 2. 幫 AI 落子
             if ai_x != -1 and ai_y != -1:
                 self.board_widget.board[ai_y][ai_x] = 2  # 白子
 

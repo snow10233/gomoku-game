@@ -53,7 +53,7 @@ class GomokuEngine:
             ai_y = int(response[3])
             return put_result, board_state, ai_x, ai_y
 
-        return "INVALID", "ERROR", -1, -1
+        return "INVALID", "CONTINUE", -1, -1
 
     def take_back(self):
         """
@@ -87,6 +87,24 @@ class GomokuEngine:
 
         # 回傳 True 代表通訊成功，並附上要清空的座標清單
         return True, undo_positions
+
+    def over_time(self):
+        if not self.process:
+            return False, []
+
+        # 1. 傳送指令並讀取第一次確認
+        status = self.send_command("OVER_TIME")
+        if status != "SUCCESS":
+            return "INVALID", "CONTINUE", -1, -1
+
+        response = self.process.stdout.readline().strip().split()
+
+        put_result = response[0]  # SUCCESS 或 INVALID
+        board_state = response[1]  # CONTINUE, WIN_BLACK, WIN_WHITE, DRAW
+        ai_x = int(response[2])
+        ai_y = int(response[3])
+        return put_result, board_state, ai_x, ai_y
+
 
     def close(self):
         """關閉遊戲時，把 C++ 行程也殺掉"""
