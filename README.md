@@ -35,7 +35,7 @@
 #### python
 > 使用venv避免汙染全局環境
 1. 確定WSL已安裝venv
-2. command : `python3 venv -m venv venv` + `source venv/bin/activate`
+2. command : `python3 -m venv .venv` + `source venv/bin/activate`
 3. 確定最左邊出現 (venv) 
 4. 根據需求新增對應library到虛擬環境中 `pip install ...`
 
