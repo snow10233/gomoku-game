@@ -14,5 +14,5 @@ class GameButton(QPushButton):
                 font-size: 18px;
             }
             QPushButton:hover { background-color: #535353; }
-        """
+            """
         )
