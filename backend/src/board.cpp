@@ -180,6 +180,7 @@ void Board::resetBoard() {
       c = ChessPiece::EMPTY;
     }
   }
+  boardData.resetDataSaver();
 }
 
 PutChessResult Board::putChess(const int x, const int y) {

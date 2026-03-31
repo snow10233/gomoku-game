@@ -11,3 +11,9 @@ bool DataSaver::takeBackAMove() {
   steps.pop();
   return true;
 }
+
+void DataSaver::resetDataSaver() {
+  while (!steps.empty()) {
+    steps.pop();
+  }
+}
