@@ -16,4 +16,6 @@ public:
   void putAChess(const int x, const int y);
 
   bool takeBackAMove();
+
+  void resetDataSaver();
 };
