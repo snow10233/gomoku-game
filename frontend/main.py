@@ -1,7 +1,7 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QStackedWidget
 from settings import WINDOW_WIDTH, WINDOW_HEIGHT
-from ui.pages import HomePage, GamePage, MultiplayerPage
+from ui.pages import HomePage, GamePage, MultiplayerPage, SingalPage
 
 
 class MainWindow(QMainWindow):
@@ -15,20 +15,33 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.stacked_widget)
 
         self.home_page = HomePage()
-        self.game_page = GamePage()  # 🌟 實例化遊戲頁面
-        self.multi_page = MultiplayerPage()  # 🌟 實例化多人在線頁面
+        self.game_page = GamePage() 
+        self.multi_page = MultiplayerPage() 
+        self.singal_page = SingalPage()
+
+        self.game_mode = False
+        # 此設定是給game_page作為讀取判斷
+        # 依據此參數來決定要讀取單人的設定還是雙人的設定
 
         self.stacked_widget.addWidget(self.home_page)  # Index 0
         self.stacked_widget.addWidget(self.game_page)  # Index 1
         self.stacked_widget.addWidget(self.multi_page)  # Index 2
+        self.stacked_widget.addWidget(self.singal_page)  # Index 3
 
         # 🌟 綁定所有的頁面跳轉邏輯
-        self.home_page.request_single_player.connect(self.go_to_game_page)
+        self.home_page.request_single_player.connect(self.go_to_singal_page)
         self.home_page.request_multiplayer.connect(self.go_to_multi_page)
+
+        self.singal_page.request_home.connect(self.go_to_home_page)
+        self.singal_page.request_start_game.connect(self.go_to_game_page)
+
 
         self.game_page.request_home.connect(self.go_to_home_page)  # 遊戲 -> 首頁
 
         self.multi_page.request_home.connect(self.go_to_home_page)  # 雙人 -> 首頁
+
+    def go_to_singal_page(self):
+        self.stacked_widget.setCurrentIndex(3)
 
     def go_to_game_page(self):
         print("切換至遊戲畫面，發送 {AI_MODE}")
