@@ -46,7 +46,7 @@ class GamePage(QWidget):
         # --- 按鈕設置 ---
         self.btn_undo = GameButton("悔棋", self)
         self.btn_reset = GameButton("重置棋盤", self)
-        self.btn_back = GameButton("回到主選單", self)
+        self.btn_back = GameButton("返回主選單", self)
 
         bottom_right_layout.addWidget(self.btn_undo)
         bottom_right_layout.addWidget(self.btn_reset)
