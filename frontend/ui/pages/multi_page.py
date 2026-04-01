@@ -42,7 +42,7 @@ class MultiplayerPage(QWidget):
         # 建立三個選項按鈕
         self.btn_create = MenuButton("建立房間", self)
         self.btn_join = MenuButton("加入房間", self)
-        self.btn_back = MenuButton("主選單", self)
+        self.btn_back = MenuButton("返回主選單", self)
 
         layout.addWidget(self.btn_create)
         layout.addWidget(self.btn_join)

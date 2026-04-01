@@ -1,9 +1,9 @@
-#include "board.h"
-#include "console-ui.h"
+#include "console_ui.h"
+#include "game_manager.h"
 #include <iostream>
 using namespace std;
 
-const int boardSize = 15;
+const int BOARDSIZE = 15;
 
 int main() {
   string gameMode;
@@ -18,8 +18,8 @@ int main() {
     cout << "SUCCESS" << endl;
 
     if (gameMode == "AI_MODE") {
+      GameManager singalGameManager{BOARDSIZE};
       string action;
-      Board gameBoard{boardSize};
       while (true) {
         cin >> action;
 
@@ -38,26 +38,20 @@ int main() {
             continue;
           }
 
-          PutChessResult putChessResultState = gameBoard.putChess(col, row);
+          auto putChessResultState = singalGameManager.putChess(col, row);
 
-          BattleResult boardState = gameBoard.getBattleState();
-          pair<int, int> aiPos{-1, -1};
+          pair<int, int> step = {-1, -1};
 
-          if (boardState == BattleResult::CONTINUE &&
-              putChessResultState == PutChessResult::SUCCESS) {
-            aiPos = gameBoard.aiFindBestPos();
-            gameBoard.putChess(aiPos.first, aiPos.second);
-            boardState = gameBoard.getBattleState();
+          if (putChessResultState == PutChessResult::SUCCESS) {
+            step = singalGameManager.AiPutChess();
           }
 
           cout << putChessResultState << " ";
-          cout << boardState << " ";
-          cout << aiPos.first << " ";
-          cout << aiPos.second << endl;
-
-          // CONSOLE_UI::showBoard(gameBoard);
+          cout << singalGameManager.getBattleState() << " ";
+          cout << step.first << " ";
+          cout << step.second << endl;
         } else if (action == "TAKE_BACK") {
-          pair<int, int> aiDelete = gameBoard.takeBackAMove();
+          auto aiDelete = singalGameManager.takeBack();
 
           if (aiDelete.first == -1) {
             cout << "INVALID -1 -1" << endl;
@@ -68,7 +62,7 @@ int main() {
           cout << aiDelete.first << " ";
           cout << aiDelete.second << endl;
 
-          pair<int, int> playerDelete = gameBoard.takeBackAMove();
+          auto playerDelete = singalGameManager.takeBack();
 
           if (playerDelete.first == -1) {
             cout << "INVALID -1 -1" << endl;
@@ -78,28 +72,22 @@ int main() {
           cout << "SUCCESS" << " ";
           cout << playerDelete.first << " ";
           cout << playerDelete.second << endl;
-
-          // CONSOLE_UI::showBoard(gameBoard);
         } else if (action == "OVER_TIME") {
-          gameBoard.overTimeProcess();
+          auto step = singalGameManager.overTime();
 
-          pair<int, int> aiPos = gameBoard.aiFindBestPos();
-          PutChessResult putChessResultState =
-              gameBoard.putChess(aiPos.first, aiPos.second);
-
-          BattleResult boardState = gameBoard.getBattleState();
-
-          cout << putChessResultState << " ";
-          cout << boardState << " ";
-          cout << aiPos.first << " ";
-          cout << aiPos.second << endl;
+          cout << "SUCCESS" << " ";
+          cout << singalGameManager.getBattleState() << " ";
+          cout << step.first << " ";
+          cout << step.second << endl;
         } else if (action == "SAVE") {
-          // 敬請期待
+          cout << singalGameManager.saveData() << endl;
         } else if (action == "HOME_PAGE") {
           break;
         } else if (action == "RESET") {
-          gameBoard.resetBoard();
+          singalGameManager.reset();
         }
+
+        // cout << singalGameManager << endl;
       }
     } else if (gameMode == "TWO_PLAYER_MODE") {
       // 敬請期待

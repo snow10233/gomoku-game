@@ -1,11 +1,7 @@
-#include "console-ui.h"
+#include "console_ui.h"
 
-void CONSOLE_UI::showBoard(const Board &board) {
-  std::cout << board << std::endl;
-}
-
-void CONSOLE_UI::showWhichPlayer(const Board &board) {
-  if (board.isWhoPlayNow() == ChessPiece::BLACK) {
+void CONSOLE_UI::showWhichPlayer(const GameManager &gameManager) {
+  if (gameManager.getCurrentPlayer() == ChessPiece::BLACK) {
     std::cout << "目前執棋: 黑子(●)" << std::endl;
   } else {
     std::cout << "目前執棋: 白子(○)" << std::endl;
