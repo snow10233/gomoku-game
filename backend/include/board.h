@@ -1,52 +1,43 @@
 #pragma once
-#include "chess.h"
-#include "data-saver.h"
 #include "state.h"
-#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <vector>
 
-using dualChessPieceVector = std::vector<std::vector<ChessPiece>>;
-using AICalculatePair = std::pair<std::pair<int, int>, int>;
-
 class Board {
   friend std::ostream &operator<<(std::ostream &os, const Board &board);
-  friend int getHorizontalDistance(const Board &b1);
-  friend int getVerticalDistance(const Board &b1);
-  friend int getLeftDiagonalDistance(const Board &b1);
-  friend int getRightDiagonalDistance(const Board &b1);
-
 private:
-  dualChessPieceVector board;
-  Chess lastlyChess;
-  DataSaver boardData;
-  ChessPiece whoPlay;
-  BattleResult battleState;
-  int sizeLimit;
+  std::vector<std::vector<ChessPiece>> board;
+  int size;
   int totalChesses;
 
-  BattleResult calculateBattleState() const;
-
-  void changePlayer();
-
-  PutChessResult isChessPositionValid(const int x, const int y) const;
+  PutChessResult getPutChessResult(const int x, const int y) const;
 
 public:
   Board(int size = 15);
 
-  ChessPiece isWhoPlayNow() const;
+  PutChessResult putChess(const ChessPiece player, const int x, const int y);
 
-  BattleResult getBattleState() const;
+  int getHorizontalDistance(const ChessPiece player, const int x,
+                            const int y) const;
 
-  PutChessResult putChess(const int x, const int y);
+  int getVerticalDistance(const ChessPiece player, const int x,
+                          const int y) const;
 
-  void resetBoard();
+  int getLeftDiagonalDistance(const ChessPiece player, const int x,
+                              const int y) const;
 
-  void overTimeProcess();
+  int getRightDiagonalDistance(const ChessPiece player, const int x,
+                               const int y) const;
 
-  std::pair<int, int> takeBackAMove();
+  bool isFull() const;
 
-  std::pair<int, int> aiFindBestPos();
+  void reset();
+
+  void takeBack(const int x, const int y);
+
+  bool isXValid(const int x) const;
+
+  bool isYValid(const int y) const;
 };
