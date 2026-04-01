@@ -2,6 +2,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
+    QLabel,
 )
 from PySide6.QtCore import Qt, Signal
 from core.engine import GomokuEngine
@@ -29,6 +30,21 @@ class GamePage(QWidget):
         self.timer_label = GameTimerLabel()
 
         # --- 玩家棋子 ---
+        now_player = 0 # 0 黑 1 白
+        title = QLabel("黑棋回合")
+        title.setStyleSheet(
+            """
+            qproperty-alignment: 'AlignCenter';
+            background-color: #4f4f4f;
+            color: white; 
+            font-size: 40px;
+            font-weight: bold;
+            min-height: 70px;
+            min-width: 500px;
+            border-radius: 10px;
+            """
+        )
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # --- 下方功能區塊 ---
         bottom_layout = QHBoxLayout()
@@ -46,7 +62,7 @@ class GamePage(QWidget):
         # --- 按鈕設置 ---
         self.btn_undo = GameButton("悔棋", self)
         self.btn_reset = GameButton("重置棋盤", self)
-        self.btn_back = GameButton("回到主選單", self)
+        self.btn_back = GameButton("返回主選單", self)
 
         bottom_right_layout.addWidget(self.btn_undo)
         bottom_right_layout.addWidget(self.btn_reset)
@@ -84,7 +100,6 @@ class GamePage(QWidget):
             self.timer_label.reset()
         else:
             print("C++ 引擎拒絕了這步棋！")
-        
 
     def handle_user_move(self, col, row):
         """玩家點擊棋盤時觸發的真正邏輯"""

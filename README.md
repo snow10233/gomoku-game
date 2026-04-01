@@ -53,47 +53,76 @@
 	- {A / B} : 成功輸出A 失敗輸出B
 	- 由上而下依序通訊
 	- 多個資料用一個空格隔開
-    - 連續兩次回傳 {SUCCESS / INVALID} : 第一次為輸入是否正確符合格式 第二次為具體操作是否成功
+    - 連續兩次回傳 {SUCCESS / INVALID} : 第一次回傳為輸入是否正確符合格式 第二次回傳為具體操作是否成功
 
 - 流程指令說明
-	1. 選擇模式  
-	    1. 單人 (AI)
-		    - py -> {AI_MODE} -> cpp
-		    - cpp -> {SUCCESS / INVALID} -> py
-	    2. 雙人 (房號P2P連線)
-		    - py -> {TWO_PLAYER_MODE} -> cpp
-		    - cpp -> {SUCCESS / INVALID} -> py
-	    3. 回放 (選擇檔案) 
-		    - py -> {REVIEW_MODE} -> cpp
-		    - cpp -> {SUCCESS / INVALID} -> py
-	    4. 載入 (暫時先開放單人就好) 
-		    - py -> {RELOAD_MODE} -> cpp
-		    - cpp -> {SUCCESS / INVALID} -> py
-	2. 遊玩過程
-	    1. 下棋 (相互通訊x, y) 
-		    - py ->{PUT_CHESS} -> cpp
-		    - cpp -> {SUCCESS / INVALID} -> py
-		    - py -> {x y} -> cpp
-	        - cpp -> {PUT_RESULT BOARD_STATE AI's x AI's y / INVALID CONTINUE -1 -1} -> py
-	    2. 悔棋 (可以無限悔棋)
-		    - py -> {TAKE_BACK} -> cpp
-		    - cpp -> {SUCCESS / INVALID} -> py 
-		    - cpp -> {SUCCESS x y/ INVALID -1 -1} -> py (悔棋將返回悔的那一顆棋的x, y 前端直接根據這個調整畫面)
-		    - cpp -> {SUCCESS x y/ INVALID -1 -1} -> py (限AI模式會有第二次 悔棋一次就要把AI跟自己的都悔回去)
-	    3. 儲存 (下次再玩，暫時開放單人)
-            - py -> {SAVE} -> cpp
+    1. 單人 (AI)
+        - py -> {AI_MODE} -> cpp
+        - cpp -> {SUCCESS / INVALID} -> py
+        
+        1. 開啟新遊戲
+            - py -> {NEW_GAME} -> cpp
             - cpp -> {SUCCESS / INVALID} -> py
-		    - cpp -> {SUCCESS / INVALID} -> py
-        4. 超時 (換人下)
-            - py -> {OVER_TIME} -> cpp
+        2. 載入舊棋局
+            - py -> {RELOAD_GAME} -> cpp
             - cpp -> {SUCCESS / INVALID} -> py
-	        - cpp -> {PUT_RESULT BOARD_STATE AI's x AI's y / INVALID CONTINUE -1 -1} -> py
-	3. 遊戲結束
-	     1. 分享 (輸出 `chessBattleResultData.txt` 檔案 暫定為PGN格式 `{{x,y}, {x,y},...}`)
-            - py -> {SHARE} -> cpp
-            - cpp -> {SUCCESS / INVALID} -> py
-		    - cpp -> {SUCCESS / INVALID} -> py
-	     2. 回到主選單 (回到步驟1)
-            - py -> {HOME_PAGE} -> cpp
-            - cpp -> {SUCCESS / INVALID} -> py
-		    - cpp -> {SUCCESS / INVALID} -> py
+
+            1. 下棋 (相互通訊x, y) 
+                - py ->{PUT_CHESS} -> cpp
+                - cpp -> {SUCCESS / INVALID} -> py
+                - py -> {x y} -> cpp
+                - cpp -> {PUT_RESULT BOARD_STATE AI's x AI's y / INVALID CONTINUE -1 -1} -> py
+            2. 悔棋 (可以無限悔棋)
+                - py -> {TAKE_BACK} -> cpp
+                - cpp -> {SUCCESS / INVALID} -> py 
+                - cpp -> {SUCCESS x y/ INVALID -1 -1} -> py (悔棋將返回悔的那一顆棋的x, y 前端直接根據這個調整畫面)
+                - cpp -> {SUCCESS x y/ INVALID -1 -1} -> py (限AI模式會有第二次 悔棋一次就要把AI跟自己的都悔回去)
+            3. 超時 (換人下)
+                - py -> {OVER_TIME} -> cpp
+                - cpp -> {SUCCESS / INVALID} -> py
+                - cpp -> {PUT_RESULT BOARD_STATE AI's x AI's y / INVALID CONTINUE -1 -1} -> py
+            4. 儲存 (下次再玩，暫時開放單人)
+                - py -> {SAVE} -> cpp
+                - cpp -> {SUCCESS / INVALID} -> py
+                - cpp -> {(棋局PNG字串)} -> py (python負責把處理好的字串寫進檔案當中 *配合pySide6的檔案選取功能*)
+            5. 返回主選單
+                - py -> {HOME_PAGE} -> cpp
+                - cpp -> {SUCCESS / INVALID} -> py
+            6. 重置棋盤
+                - py -> {RESET} -> cpp
+                - cpp -> {SUCCESS / INVALID} -> py
+                
+                1. 分享 (輸出 `chessBattleResultData.txt` 檔案 暫定為PGN格式 `{{x,y}, {x,y},...}`)
+                    - py -> {SHARE} -> cpp
+                    - cpp -> {SUCCESS / INVALID} -> py
+                    - cpp -> {SUCCESS / INVALID} -> py
+                2. 回到主選單 (回到步驟1)
+                    - py -> {HOME_PAGE} -> cpp
+                    - cpp -> {SUCCESS / INVALID} -> py
+                    - cpp -> {SUCCESS / INVALID} -> py
+
+    2. 雙人 (房號P2P連線)
+        - py -> {TWO_PLAYER_MODE} -> cpp
+        - cpp -> {SUCCESS / INVALID} -> py
+    3. 回放 (選擇檔案) 
+        - py -> {REVIEW_MODE} -> cpp
+        - cpp -> {SUCCESS / INVALID} -> py
+
+## PNG定義 (OT代表OVER_TIME)
+    - ex. A0 C5 G3 OT A4 N11
+        A B C D E F G H I J K L M N O
+    00
+    01
+    02
+    03
+    04
+    05
+    06
+    07
+    08
+    09
+    10
+    11
+    12
+    13
+    14
