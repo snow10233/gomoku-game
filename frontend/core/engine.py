@@ -26,7 +26,9 @@ class GomokuEngine:
         self.process.stdin.write(f"{cmd}\n")
         self.process.stdin.flush()
 
-        return self.process.stdout.readline().strip()
+        temp = self.process.stdout.readline().strip()
+        print(f"c++ say:{temp}")
+        return temp
 
     def put_chess(self, x, y):
         """執行下棋的完整通訊流程"""
@@ -44,7 +46,10 @@ class GomokuEngine:
 
         # 3. 讀取 C++ 回傳的結果
         # 預期格式: {PUT_RESULT BOARD_STATE AI's_x AI's_y} 或 {INVALID CONTINUE -1 -1}
-        response = self.process.stdout.readline().strip().split()
+        
+        temp = self.process.stdout.readline().strip()
+        print(f"c++ say:{temp}")
+        response = temp.split()
 
         if len(response) >= 4:
             put_result = response[0]  # SUCCESS 或 INVALID
