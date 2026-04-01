@@ -10,11 +10,12 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # 4. 把 src 資料夾底下的 .cpp 檔案整理起來
 set(SOURCES
-    src/main.cpp
+    src/ai_player.cpp
     src/board.cpp
-    src/chess.cpp
-    src/console-ui.cpp
-    src/data-saver.cpp
+    src/console_ui.cpp
+    src/data_saver.cpp
+    src/game_manager.cpp
+    src/main.cpp
     src/state.cpp
 )
 # 告訴 CMake 匯出編譯指令的詳細資訊
