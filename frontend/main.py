@@ -7,6 +7,7 @@ from ui.pages import (
     SingalPage,
     SingalGamePage,
     MulitGamePage,
+    newORload,
 )
 
 
@@ -21,23 +22,23 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.stacked_widget)
 
         self.home_page = HomePage()
-
+        self.new_or_load_page = newORload()
         self.singal_page = SingalPage()
         self.singal_game_page = SingalGamePage()
-
         self.multi_page = MultiplayerPage()
         self.multi_game_page = MulitGamePage()
 
-        self.stacked_widget.addWidget(self.home_page)  # Index 0
+        self.stacked_widget.addWidget(self.home_page)          # Index 0
+        self.stacked_widget.addWidget(self.new_or_load_page)   # Index 1
+        self.stacked_widget.addWidget(self.singal_page)        # Index 2
+        self.stacked_widget.addWidget(self.singal_game_page)   # Index 3
+        self.stacked_widget.addWidget(self.multi_page)         # Index 4
+        self.stacked_widget.addWidget(self.multi_game_page)    # Index 5
 
-        self.stacked_widget.addWidget(self.singal_page)  # Index 1
-        self.stacked_widget.addWidget(self.singal_game_page)  # Index 2
-
-        self.stacked_widget.addWidget(self.multi_page)  # Index 3
-        self.stacked_widget.addWidget(self.multi_game_page)  # Index 4
+        self.stacked_widget.setCurrentIndex(0)
 
         # 🌟 綁定所有的頁面跳轉邏輯
-        self.home_page.request_single_player.connect(self.go_to_singal_page)
+        self.home_page.request_single_player.connect(self.go_to_newORload_page)
         self.home_page.request_multi_player.connect(self.go_to_multi_page)
 
         self.singal_page.request_home.connect(self.go_to_home_page)
@@ -50,26 +51,33 @@ class MainWindow(QMainWindow):
 
         self.multi_game_page.request_home.connect(self.go_to_home_page)  # 遊戲 -> 首頁
 
+        self.new_or_load_page.request_New.connect(self.go_to_singal_page)
+        #self.new_or_load_page.request_Load.connect(self.go_to_load_game)
+        self.new_or_load_page.request_Back.connect(self.go_to_home_page)
+
     def go_to_home_page(self):
         print("切換回主選單，發送 {HOME_PAGE}")
         self.stacked_widget.setCurrentIndex(0)
         self.singal_game_page.end_game()
         self.multi_game_page.end_game()
 
-    def go_to_singal_page(self):
+    def go_to_newORload_page(self):
         self.stacked_widget.setCurrentIndex(1)
+
+    def go_to_singal_page(self):
+        self.stacked_widget.setCurrentIndex(2)
 
     def go_to_singal_game_page(self):
         print("切換至遊戲畫面，發送 {AI_MODE}")
-        self.stacked_widget.setCurrentIndex(2)
+        self.stacked_widget.setCurrentIndex(3)
         self.singal_game_page.start_game()  # 🌟 切換過去時，順便啟動計時器和清空棋盤
 
     def go_to_multi_page(self):
-        self.stacked_widget.setCurrentIndex(3)
+        self.stacked_widget.setCurrentIndex(4)
 
     def go_to_multi_game_page(self):
         print("切換至遊戲畫面，發送 {TWO_PLAYER_MODE}")
-        self.stacked_widget.setCurrentIndex(4)
+        self.stacked_widget.setCurrentIndex(5)
         self.multi_game_page.start_game()  # 🌟 切換過去時，順便啟動計時器和清空棋盤
 
 
