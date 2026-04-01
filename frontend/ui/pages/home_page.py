@@ -10,7 +10,7 @@ from ui.components import MenuButton, WipDialog
 class HomePage(QWidget):
     # 定義自訂信號，用來告訴 main.py "玩家想進入單人遊戲了！"
     request_single_player = Signal()
-    request_multiplayer = Signal()
+    request_multi_player = Signal()
 
     def __init__(self):
         super().__init__()
@@ -57,7 +57,7 @@ class HomePage(QWidget):
 
         # 綁定按鈕事件
         self.btn_single.clicked.connect(self.request_single_player.emit)
-        self.btn_multi.clicked.connect(self.request_multiplayer.emit)  # 暫未開放
+        self.btn_multi.clicked.connect(self.request_multi_player.emit)  # 暫未開放
         self.btn_load.clicked.connect(self.show_wip)  # 暫未開放
         self.btn_replay.clicked.connect(self.show_wip)  # 暫未開放
 
