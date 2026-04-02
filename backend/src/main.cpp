@@ -8,6 +8,7 @@ const int BOARDSIZE = 15;
 int main() {
   string gameMode;
   bool gameContinue = true;
+
   while (gameContinue) {
     cin >> gameMode;
 
@@ -20,6 +21,7 @@ int main() {
     if (gameMode == "AI_MODE") {
       GameManager singalGameManager{BOARDSIZE};
       string action;
+
       while (true) {
         cin >> action;
 
@@ -82,6 +84,7 @@ int main() {
         } else if (action == "SAVE") {
           cout << singalGameManager.saveData() << endl;
         } else if (action == "HOME_PAGE") {
+          singalGameManager.reset();
           break;
         } else if (action == "RESET") {
           singalGameManager.reset();
