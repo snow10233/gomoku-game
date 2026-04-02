@@ -110,7 +110,7 @@ class GamePage(QWidget):
         put_result, board_state, ai_x, ai_y = self.engine.put_chess(col, row)
 
         if put_result:
-            # str -> int
+            # str -> intvi
             ai_x = int(ai_x)
             ai_y = int(ai_y)
 
@@ -177,8 +177,10 @@ class GamePage(QWidget):
                 self.btn_undo.setVisible(True)
             if not timer_enable:
                 self.timer_label.setVisible(False)
+                self.timer_label.switch(False)
             else:
                 self.timer_label.setVisible(True)
+                self.timer_label.switch(True)
                 self.timer_label.start_timer()
         else:
             print(f"C++切換失敗")
