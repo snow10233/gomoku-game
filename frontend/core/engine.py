@@ -23,6 +23,7 @@ class GomokuEngine:
         if not self.process:
             return "INVALID"
 
+        print(f"python send:{cmd}")
         self.process.stdin.write(f"{cmd}\n")
         self.process.stdin.flush()
 
