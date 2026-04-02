@@ -30,7 +30,7 @@ class GamePage(QWidget):
         self.timer_label = GameTimerLabel()
 
         # --- 玩家棋子 ---
-        now_player = 0 # 0 黑 1 白
+        now_player = 0  # 0 黑 1 白
         title = QLabel("黑棋回合")
         title.setStyleSheet(
             """
@@ -133,7 +133,7 @@ class GamePage(QWidget):
         print("玩家要求悔棋，發送 {TAKE_BACK}")
 
         # 呼叫我們剛剛在 Engine 寫好的函式
-        success, undo_positions = self.engine.take_back()
+        success, undo_positions = self.engine.undo()
 
         if success:
             print(f"悔棋成功，C++ 指示移除座標：{undo_positions}")
@@ -164,7 +164,7 @@ class GamePage(QWidget):
         self.board_widget.update()
         self.timer_label.start_timer()
 
-    def start_game(self):
+    def start_game(self, undo_enable, timer_enable):
         """當從首頁切換過來時，呼叫這個來初始化"""
         # 🌟 告訴 C++ 我們要進入 AI 模式了
         response = self.engine.send_command("AI_MODE")
@@ -173,10 +173,19 @@ class GamePage(QWidget):
 
         self.board_widget.board = [[0 for _ in range(15)] for _ in range(15)]
         self.board_widget.update()
-        self.timer_label.start_timer()
+        if not undo_enable:
+            self.btn_undo.setVisible(False)
+        else:
+            self.btn_undo.setVisible(True)
+        if not timer_enable:
+            self.timer_label.setVisible(False)
+        else:
+            self.timer_label.setVisible(True)
+            self.timer_label.start_timer()
 
     def end_game(self):
         """當切換回首頁時，呼叫這個來清空棋盤"""
         response = self.engine.send_command("HOME_PAGE")
         if response == "SUCCESS":
             print("C++ 已切換至 HOME_PAGE")
+            self.timer_label.timer.stop()
