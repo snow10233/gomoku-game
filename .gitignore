@@ -2,5 +2,7 @@ build/
 .cache/
 .venv/
 __pycache__/
-/.vs
+vs/
 venv/
+CMakeSettings.json
+CppProperties.json
