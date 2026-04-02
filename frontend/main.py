@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
         self.stacked_widget.setCurrentIndex(3)
         undo_enable = self.single_new_page.btn_undo_enable
         timer_enable = self.single_new_page.btn_timer_enable
-        print(f"undo:{undo_enable}, timer:{timer_enable}")
+        # print(f"undo:{undo_enable}, timer:{timer_enable}")
         self.single_game_page.start_game(undo_enable, timer_enable)
 
     def go_to_multi_page(self):
