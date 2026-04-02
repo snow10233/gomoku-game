@@ -21,15 +21,15 @@ class GomokuEngine:
     def send_command(self, cmd):
         """傳送單一指令 (如 AI_MODE, HOME_PAGE) 並讀取 SUCCESS/INVALID"""
         if not self.process:
-            return "INVALID"
+            return False
 
-        print(f"python send:{cmd}")
+        print(f"py -> {cmd} -> cpp")
         self.process.stdin.write(f"{cmd}\n")
         self.process.stdin.flush()
 
         temp = self.process.stdout.readline().strip()
-        print(f"c++ say:{temp}")
-        return temp
+        print(f"cpp -> {temp} -> py")
+        return temp == "SUCCESS"
 
     def put_chess(self, x, y):
         """執行下棋的完整通訊流程"""
@@ -37,29 +37,23 @@ class GomokuEngine:
             return "INVALID", "ERROR", -1, -1
 
         # 1. 傳送下棋請求
-        status = self.send_command("PUT_CHESS")
-        if status != "SUCCESS":
+        success = self.send_command("PUT_CHESS")
+        if not success:
             return "INVALID", "ERROR", -1, -1
 
         # 2. 傳送玩家座標 (x y)
+        print(f"py -> {x} {y} -> cpp")
         self.process.stdin.write(f"{x} {y}\n")
         self.process.stdin.flush()
 
         # 3. 讀取 C++ 回傳的結果
         # 預期格式: {PUT_RESULT BOARD_STATE AI's_x AI's_y} 或 {INVALID CONTINUE -1 -1}
-        
-        temp = self.process.stdout.readline().strip()
-        print(f"c++ say:{temp}")
-        response = temp.split()
+        put_result, board_state, ai_x, ai_y = (
+            self.process.stdout.readline().strip().split()
+        )
+        print(f"cpp -> {put_result} {board_state} {ai_x} {ai_y} -> py")
 
-        if len(response) >= 4:
-            put_result = response[0]  # SUCCESS 或 INVALID
-            board_state = response[1]  # CONTINUE, WIN_BLACK, WIN_WHITE, DRAW
-            ai_x = int(response[2])
-            ai_y = int(response[3])
-            return put_result, board_state, ai_x, ai_y
-
-        return "INVALID", "CONTINUE", -1, -1
+        return put_result == "SUCCESS", board_state, ai_x, ai_y
 
     def undo(self):
         """
@@ -73,8 +67,8 @@ class GomokuEngine:
             return False, []
 
         # 1. 傳送指令並讀取第一次確認
-        status = self.send_command("TAKE_BACK")
-        if status != "SUCCESS":
+        success = self.send_command("TAKE_BACK")
+        if not success:
             return False, []  # C++ 拒絕悔棋 (可能是剛開局還沒下)
 
         undo_positions = []
@@ -99,8 +93,8 @@ class GomokuEngine:
             return False, []
 
         # 1. 傳送指令並讀取第一次確認
-        status = self.send_command("OVER_TIME")
-        if status != "SUCCESS":
+        success = self.send_command("OVER_TIME")
+        if not success:
             return "INVALID", "CONTINUE", -1, -1
 
         response = self.process.stdout.readline().strip().split()
