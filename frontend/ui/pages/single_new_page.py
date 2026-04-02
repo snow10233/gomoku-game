@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt, Signal
 from ui.components import MenuButton, WipDialog
 
 
-class SingalPage(QWidget):
+class SingleNewPage(QWidget):
     request_home = Signal()
     request_start_game = Signal()
 
@@ -42,33 +42,33 @@ class SingalPage(QWidget):
         self.btn_start = MenuButton("開始遊戲", self)
         self.btn_back = MenuButton("返回主選單", self)
 
-        self.btn_can_take_back_enable = True
+        self.btn_undo_enable = True
         self.btn_timer_enable = True
-        self.btn_can_take_back = MenuButton("開啟悔棋功能", self)
-        self.btn_timer = MenuButton("開啟落子限時", self)
+        self.btn_can_undo = MenuButton("開啟悔棋功能", self)
+        self.btn_can_timer = MenuButton("開啟落子限時", self)
 
         layout.addWidget(self.btn_start)
-        layout.addWidget(self.btn_can_take_back)
-        layout.addWidget(self.btn_timer)
+        layout.addWidget(self.btn_can_undo)
+        layout.addWidget(self.btn_can_timer)
         layout.addWidget(self.btn_back)
 
         main_layout.addLayout(layout)
 
         # 綁定按鈕邏輯
         self.btn_start.clicked.connect(self.request_start_game.emit)
-        self.btn_can_take_back.clicked.connect(self.can_take_back_onclick)
-        self.btn_timer.clicked.connect(self.timer_onclick)
+        self.btn_can_undo.clicked.connect(self.can_undo_onclick)
+        self.btn_can_timer.clicked.connect(self.can_timer_onclick)
         self.btn_back.clicked.connect(self.request_home.emit)
 
     def show_wip(self):
         dialog = WipDialog(self)
         dialog.exec()
 
-    def can_take_back_onclick(self):
-        self.btn_can_take_back_enable = not self.btn_can_take_back_enable
+    def can_undo_onclick(self):
+        self.btn_undo_enable = not self.btn_undo_enable
 
-        if self.btn_can_take_back_enable:
-            self.btn_can_take_back.setStyleSheet(
+        if self.btn_undo_enable:
+            self.btn_can_undo.setStyleSheet(
                 """
               QPushButton { 
                   background-color: #4CAF50;
@@ -79,9 +79,9 @@ class SingalPage(QWidget):
               QPushButton:hover { background-color: #45a049; }
               """
             )
-            self.btn_can_take_back.setText("開啟悔棋功能")
+            self.btn_can_undo.setText("開啟悔棋功能")
         else:
-            self.btn_can_take_back.setStyleSheet(
+            self.btn_can_undo.setStyleSheet(
                 """
               QPushButton { 
                   background-color: #FF0000;
@@ -92,13 +92,13 @@ class SingalPage(QWidget):
               QPushButton:hover { background-color: #C70000; }
               """
             )
-            self.btn_can_take_back.setText("關閉悔棋功能")
+            self.btn_can_undo.setText("關閉悔棋功能")
 
-    def timer_onclick(self):
+    def can_timer_onclick(self):
         self.btn_timer_enable = not self.btn_timer_enable
 
         if self.btn_timer_enable:
-            self.btn_timer.setStyleSheet(
+            self.btn_can_timer.setStyleSheet(
                 """
               QPushButton { 
                   background-color: #4CAF50;
@@ -109,9 +109,9 @@ class SingalPage(QWidget):
               QPushButton:hover { background-color: #45a049; }
               """
             )
-            self.btn_timer.setText("開啟落子限時")
+            self.btn_can_timer.setText("開啟落子限時")
         else:
-            self.btn_timer.setStyleSheet(
+            self.btn_can_timer.setStyleSheet(
                 """
               QPushButton { 
                   background-color: #FF0000;
@@ -122,4 +122,4 @@ class SingalPage(QWidget):
               QPushButton:hover { background-color: #C70000; }
               """
             )
-            self.btn_timer.setText("關閉落子限時")
+            self.btn_can_timer.setText("關閉落子限時")
