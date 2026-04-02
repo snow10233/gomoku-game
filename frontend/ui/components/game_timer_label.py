@@ -9,6 +9,7 @@ class GameTimerLabel(QLabel):
 
     def __init__(self):
         super().__init__()
+        self.enable = True
         self.setStyleSheet(
             """
             qproperty-alignment: 'AlignCenter';
@@ -27,23 +28,30 @@ class GameTimerLabel(QLabel):
         self.update_display()
 
     def start_timer(self):
-        self.remaining_time = TIME_LIMIT
-        self.update_display()
-        self.timer.start(1000)
+        if self.enable:
+            self.remaining_time = TIME_LIMIT
+            self.update_display()
+            self.timer.start(1000)
 
     def count_down(self):
-        if self.remaining_time > 0:
-            self.remaining_time -= 1
-            self.update_display()
-        else:
-            self.timer.stop()
-            self.setText("時間到！")
+        if self.enable:
+            if self.remaining_time > 0:
+                self.remaining_time -= 1
+                self.update_display()
+            else:
+                self.timer.stop()
+                self.setText("時間到！")
 
-            self.time_out.emit()
+                self.time_out.emit()
 
     def update_display(self):
-        self.setText(f"剩餘時間: {self.remaining_time} s")
+        if self.enable:
+            self.setText(f"剩餘時間: {self.remaining_time} s")
 
     def reset(self):
-        self.timer.stop()
-        self.start_timer()
+        if self.enable:
+            self.timer.stop()
+            self.start_timer()
+
+    def switch(self, state):
+        self.enable = state

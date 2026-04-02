@@ -107,26 +107,27 @@ class GamePage(QWidget):
         if self.board_widget.board[row][col] != 0:
             return
 
-        print(f"玩家嘗試下棋：({col}, {row})")
-        # 透過引擎呼叫 C++
         put_result, board_state, ai_x, ai_y = self.engine.put_chess(col, row)
 
-        if put_result == "SUCCESS" or put_result == "PUT_RESULT":
+        if put_result:
+            # str -> intvi
+            ai_x = int(ai_x)
+            ai_y = int(ai_y)
+
             # 1. 玩家落子成功，更新本機陣列
             self.board_widget.board[row][col] = 1  # 黑子
 
             # 2. 幫 AI 落子
-            if ai_x != -1 and ai_y != -1:
+            if ai_x != -2 and ai_y != -2:  # -2 -2為悔棋代號
                 self.board_widget.board[ai_y][ai_x] = 2  # 白子
 
             # 3. 觸發畫面重繪 & 重置計時器
             self.board_widget.update()
             self.timer_label.reset()
 
-            # TODO: 這裡之後可以根據 board_state 判斷有沒有人贏了
-            print(f"當前狀態: {board_state}")
+            print(f"當前棋盤狀態: {board_state}")
         else:
-            print("C++ 引擎拒絕了這步棋！")
+            print(f"落子失敗 原因:{put_result}")
 
     def handle_undo(self):
         """處理玩家按下悔棋按鈕的邏輯"""
@@ -136,8 +137,7 @@ class GamePage(QWidget):
         success, undo_positions = self.engine.undo()
 
         if success:
-            print(f"悔棋成功，C++ 指示移除座標：{undo_positions}")
-            # 🌟 根據 C++ 傳回來的座標，精準拔除棋盤上的棋子
+            print(f"悔棋成功 C++ 指示移除座標：{undo_positions}")
             for x, y in undo_positions:
                 if 0 <= x < 15 and 0 <= y < 15:  # 座標防呆
                     self.board_widget.board[y][x] = 0  # 將該格設為 0 (空)
@@ -148,7 +148,7 @@ class GamePage(QWidget):
             # 悔棋後，輪到玩家重新思考，所以計時器要重置
             self.timer_label.reset()
         else:
-            print("無法悔棋")
+            print("悔棋失敗")
             alert = AlertDialog("無法悔棋！(已經退回原點)", self)
             alert.exec()
 
@@ -156,36 +156,40 @@ class GamePage(QWidget):
         """處理玩家按下RESET按鈕的邏輯"""
         print("玩家要求悔棋，發送 {RESET}")
 
-        response = self.engine.send_command("RESET")
-        if response == "SUCCESS":
-            print("成功重置")
-
-        self.board_widget.board = [[0 for _ in range(15)] for _ in range(15)]
-        self.board_widget.update()
-        self.timer_label.start_timer()
+        success = self.engine.send_command("RESET")
+        if success:
+            self.board_widget.board = [[0 for _ in range(15)] for _ in range(15)]
+            self.board_widget.update()
+            self.timer_label.start_timer()
+        else:
+            print(f"C++重置失敗")
 
     def start_game(self, undo_enable, timer_enable):
         """當從首頁切換過來時，呼叫這個來初始化"""
         # 🌟 告訴 C++ 我們要進入 AI 模式了
-        response = self.engine.send_command("AI_MODE")
-        if response == "SUCCESS":
-            print("C++ 已切換至 AI_MODE")
-
-        self.board_widget.board = [[0 for _ in range(15)] for _ in range(15)]
-        self.board_widget.update()
-        if not undo_enable:
-            self.btn_undo.setVisible(False)
+        success = self.engine.send_command("AI_MODE")
+        if success:
+            self.board_widget.board = [[0 for _ in range(15)] for _ in range(15)]
+            self.board_widget.update()
+            if not undo_enable:
+                self.btn_undo.setVisible(False)
+            else:
+                self.btn_undo.setVisible(True)
+            if not timer_enable:
+                self.timer_label.setVisible(False)
+                self.timer_label.switch(False)
+            else:
+                self.timer_label.setVisible(True)
+                self.timer_label.switch(True)
+                self.timer_label.start_timer()
         else:
-            self.btn_undo.setVisible(True)
-        if not timer_enable:
-            self.timer_label.setVisible(False)
-        else:
-            self.timer_label.setVisible(True)
-            self.timer_label.start_timer()
+            print(f"C++切換失敗")
 
     def end_game(self):
         """當切換回首頁時，呼叫這個來清空棋盤"""
-        response = self.engine.send_command("HOME_PAGE")
-        if response == "SUCCESS":
+        success = self.engine.send_command("HOME_PAGE")
+        if success:
             print("C++ 已切換至 HOME_PAGE")
             self.timer_label.timer.stop()
+        else:
+            print("C++切換失敗")

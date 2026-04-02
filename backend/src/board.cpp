@@ -142,7 +142,7 @@ PutChessResult Board::putChess(const ChessPiece player, const int x,
 }
 
 void Board::takeBack(const int x, const int y) {
-  if (x == -1 || y == -1 || board[y][x] == ChessPiece::EMPTY) {
+  if (!isXValid(x) || !isYValid(y) || board[y][x] == ChessPiece::EMPTY) {
     return;
   }
 

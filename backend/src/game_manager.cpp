@@ -87,7 +87,7 @@ std::pair<int, int> GameManager::overTime() {
 }
 
 std::pair<int, int> GameManager::AiPutChess() {
-  if(battleState != BattleResult::CONTINUE) {
+  if (battleState != BattleResult::CONTINUE) {
     return {-1, -1};
   }
 

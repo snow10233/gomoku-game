@@ -8,6 +8,7 @@ const int BOARDSIZE = 15;
 int main() {
   string gameMode;
   bool gameContinue = true;
+
   while (gameContinue) {
     cin >> gameMode;
 
@@ -18,8 +19,9 @@ int main() {
     cout << "SUCCESS" << endl;
 
     if (gameMode == "AI_MODE") {
-      GameManager singalGameManager{BOARDSIZE};
+      GameManager singleGameManager{BOARDSIZE};
       string action;
+
       while (true) {
         cin >> action;
 
@@ -38,20 +40,20 @@ int main() {
             continue;
           }
 
-          auto putChessResultState = singalGameManager.putChess(col, row);
+          auto putChessResultState = singleGameManager.putChess(col, row);
 
           pair<int, int> step = {-1, -1};
 
           if (putChessResultState == PutChessResult::SUCCESS) {
-            step = singalGameManager.AiPutChess();
+            step = singleGameManager.AiPutChess();
           }
 
           cout << putChessResultState << " ";
-          cout << singalGameManager.getBattleState() << " ";
+          cout << singleGameManager.getBattleState() << " ";
           cout << step.first << " ";
           cout << step.second << endl;
         } else if (action == "TAKE_BACK") {
-          auto aiDelete = singalGameManager.takeBack();
+          auto aiDelete = singleGameManager.takeBack();
 
           if (aiDelete.first == -1) {
             cout << "INVALID -1 -1" << endl;
@@ -62,7 +64,7 @@ int main() {
           cout << aiDelete.first << " ";
           cout << aiDelete.second << endl;
 
-          auto playerDelete = singalGameManager.takeBack();
+          auto playerDelete = singleGameManager.takeBack();
 
           if (playerDelete.first == -1) {
             cout << "INVALID -1 -1" << endl;
@@ -73,21 +75,22 @@ int main() {
           cout << playerDelete.first << " ";
           cout << playerDelete.second << endl;
         } else if (action == "OVER_TIME") {
-          auto step = singalGameManager.overTime();
+          auto step = singleGameManager.overTime();
 
           cout << "SUCCESS" << " ";
-          cout << singalGameManager.getBattleState() << " ";
+          cout << singleGameManager.getBattleState() << " ";
           cout << step.first << " ";
           cout << step.second << endl;
         } else if (action == "SAVE") {
-          cout << singalGameManager.saveData() << endl;
+          cout << singleGameManager.saveData() << endl;
         } else if (action == "HOME_PAGE") {
+          singleGameManager.reset();
           break;
         } else if (action == "RESET") {
-          singalGameManager.reset();
+          singleGameManager.reset();
         }
 
-        // cout << singalGameManager << endl;
+        // cout << singleGameManager << endl;
       }
     } else if (gameMode == "TWO_PLAYER_MODE") {
       // 敬請期待
