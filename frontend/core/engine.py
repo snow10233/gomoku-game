@@ -55,7 +55,7 @@ class GomokuEngine:
 
         return "INVALID", "CONTINUE", -1, -1
 
-    def take_back(self):
+    def undo(self):
         """
         執行文件定義的 TAKE_BACK 流程：
         py -> {TAKE_BACK}
@@ -104,7 +104,6 @@ class GomokuEngine:
         ai_x = int(response[2])
         ai_y = int(response[3])
         return put_result, board_state, ai_x, ai_y
-
 
     def close(self):
         """關閉遊戲時，把 C++ 行程也殺掉"""
