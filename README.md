@@ -122,3 +122,7 @@
     12
     13
     14
+
+## notes
+	- linux pyside6 中文 `sudo apt update && sudo apt install fonts-noto-cjk -y`
+	- (未來) 離開不要關閉棋局 保存下次進來繼續玩
