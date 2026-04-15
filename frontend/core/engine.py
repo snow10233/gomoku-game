@@ -89,6 +89,7 @@ class GomokuEngine:
         return True, undo_positions
 
     def over_time(self):
+        """ 回傳格式為 {PUT_RESULT BOARD_STATE AI's_x AI's_y} 或 {INVALID CONTINUE -1 -1} """
         if not self.process:
             return False, []
 
