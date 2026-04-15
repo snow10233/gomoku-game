@@ -42,16 +42,16 @@ int main() {
 
           auto putChessResultState = singleGameManager.putChess(col, row);
 
-          pair<int, int> step = {-1, -1};
+          pair<int, int> aiStep = {-1, -1};
 
-          if (putChessResultState == PutChessResult::SUCCESS) {
-            step = singleGameManager.AiPutChess();
+          if (putChessResultState == PutChessResult::SUCCESS && singleGameManager.getBattleState() == BattleResult::CONTINUE) {
+            aiStep = singleGameManager.AiPutChess();
           }
 
           cout << putChessResultState << " ";
           cout << singleGameManager.getBattleState() << " ";
-          cout << step.first << " ";
-          cout << step.second << endl;
+          cout << aiStep.first << " ";
+          cout << aiStep.second << endl;
         } else if (action == "TAKE_BACK") {
           auto aiDelete = singleGameManager.takeBack();
 

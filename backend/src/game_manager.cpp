@@ -5,19 +5,11 @@ std::ostream &operator<<(std::ostream &os, const GameManager &game) {
   return os;
 }
 
-GameManager::GameManager(int size) : gameBoard(size) {
-  battleState = BattleResult::CONTINUE;
-  currentPlayer = ChessPiece::BLACK;
-  lastlyChess = {-1, -1};
-}
-
 void GameManager::refreshBattleState() {
   int x = lastlyChess.x;
   int y = lastlyChess.y;
-  if (gameBoard.getHorizontalDistance(currentPlayer, x, y) >= 5 ||
-      gameBoard.getVerticalDistance(currentPlayer, x, y) >= 5 ||
-      gameBoard.getLeftDiagonalDistance(currentPlayer, x, y) >= 5 ||
-      gameBoard.getRightDiagonalDistance(currentPlayer, x, y) >= 5) {
+  if (distanceCalculator.getlongestDistance(gameBoard, currentPlayer, x, y) >=
+      5) {
     if (currentPlayer == ChessPiece::BLACK) {
       battleState = BattleResult::BLACK_WIN;
     } else if (currentPlayer == ChessPiece::WHITE) {
@@ -25,9 +17,9 @@ void GameManager::refreshBattleState() {
     }
   } else if (gameBoard.isFull()) {
     battleState = BattleResult::DRAW;
+  } else {
+    battleState = BattleResult::CONTINUE;
   }
-
-  battleState = BattleResult::CONTINUE;
 }
 
 void GameManager::changePlayer() {
@@ -38,9 +30,44 @@ void GameManager::changePlayer() {
   }
 }
 
+GameManager::GameManager(int size) : gameBoard(size) {
+  battleState = BattleResult::CONTINUE;
+  currentPlayer = ChessPiece::BLACK;
+  lastlyChess = {-1, -1};
+}
+
 ChessPiece GameManager::getCurrentPlayer() const { return currentPlayer; }
 
 BattleResult GameManager::getBattleState() const { return battleState; }
+
+std::pair<int, int> GameManager::overTime() {
+  // 將-2 -2寫入data做為佔位使用 後續進行存檔才不會亂
+  gameDatas.addData(-2, -2);
+  changePlayer();
+
+  return AiPutChess();
+}
+
+std::pair<int, int> GameManager::takeBack() {
+  auto dataTemp = gameDatas.takeBack();
+
+  if (dataTemp.first == -1) {
+    return dataTemp;
+  }
+
+  gameBoard.takeBack(lastlyChess.x, lastlyChess.y);
+  lastlyChess.x = gameDatas.getTop().first;
+  lastlyChess.y = gameDatas.getTop().second;
+  changePlayer();
+
+  return dataTemp;
+}
+
+std::string GameManager::saveData() {
+  std::string temp;
+  temp << gameDatas;
+  return temp;
+}
 
 void GameManager::reset() {
   gameBoard.reset();
@@ -63,44 +90,14 @@ PutChessResult GameManager::putChess(const int x, const int y) {
   return result;
 }
 
-std::pair<int, int> GameManager::takeBack() {
-  auto dataTemp = gameDatas.takeBack();
-
-  if (dataTemp.first == -1) {
-    return dataTemp;
-  }
-
-  gameBoard.takeBack(lastlyChess.x, lastlyChess.y);
-  lastlyChess.x = gameDatas.getTop().first;
-  lastlyChess.y = gameDatas.getTop().second;
-  changePlayer();
-
-  return dataTemp;
-}
-
-std::pair<int, int> GameManager::overTime() {
-  // 將-2 -2寫入data做為佔位使用 後續進行存檔才不會亂
-  gameDatas.addData(-2, -2);
-  changePlayer();
-
-  return AiPutChess();
-}
-
 std::pair<int, int> GameManager::AiPutChess() {
   if (battleState != BattleResult::CONTINUE) {
     return {-1, -1};
   }
 
-  auto step = aiPlayer.aiFindBestPos(currentPlayer, gameBoard, lastlyChess.x,
-                                     lastlyChess.y);
+  auto step = aiPlayer.findBestPos(currentPlayer, gameBoard);
 
   putChess(step.first, step.second);
 
   return step;
-}
-
-std::string GameManager::saveData() {
-  std::string temp;
-  temp << gameDatas;
-  return temp;
 }

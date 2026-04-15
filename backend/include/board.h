@@ -19,17 +19,7 @@ public:
 
   PutChessResult putChess(const ChessPiece player, const int x, const int y);
 
-  int getHorizontalDistance(const ChessPiece player, const int x,
-                            const int y) const;
-
-  int getVerticalDistance(const ChessPiece player, const int x,
-                          const int y) const;
-
-  int getLeftDiagonalDistance(const ChessPiece player, const int x,
-                              const int y) const;
-
-  int getRightDiagonalDistance(const ChessPiece player, const int x,
-                               const int y) const;
+  ChessPiece getChess(const int x, const int y) const;
 
   bool isFull() const;
 
