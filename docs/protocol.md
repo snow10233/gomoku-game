@@ -60,9 +60,16 @@
 - `py -> {RESET} -> cpp`
 - `cpp -> {SUCCESS / INVALID} -> py`
 
-#### 2.7 分享
+### 3) 結束對局階段
+
+#### 3.1 分享
 
 - `py -> {SHARE} -> cpp`
+- `cpp -> {SUCCESS / INVALID} -> py`
+
+#### 3.2 返回主選單
+
+- `py -> {HOME_PAGE} -> cpp`
 - `cpp -> {SUCCESS / INVALID} -> py`
 
 ## Multiplayer (P2P 房號連線)
