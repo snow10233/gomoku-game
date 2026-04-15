@@ -42,9 +42,10 @@ int main() {
 
           auto putChessResultState = singleGameManager.putChess(col, row);
 
-          pair<int, int> aiStep = {-1, -1};
+          pair<int, int> aiStep = {-2, -2}; // -2 -2為悔棋代號
 
-          if (putChessResultState == PutChessResult::SUCCESS && singleGameManager.getBattleState() == BattleResult::CONTINUE) {
+          if (putChessResultState == PutChessResult::SUCCESS &&
+              singleGameManager.getBattleState() == BattleResult::CONTINUE) {
             aiStep = singleGameManager.AiPutChess();
           }
 
