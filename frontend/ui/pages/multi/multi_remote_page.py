@@ -8,7 +8,7 @@ from PySide6.QtCore import Qt, Signal
 from ui.components import InputDialog, MenuButton, WipDialog
 
 
-class MultiplayerPage(QWidget):
+class MultiRemotePage(QWidget):
     # 發射信號告訴 main.py "我要回首頁了"
     request_home = Signal()
 

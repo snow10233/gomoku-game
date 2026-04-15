@@ -3,9 +3,11 @@
 #include "board.h"
 #include "chess.h"
 #include "data_saver.h"
+#include "distance_calculator.h"
 
 class GameManager {
   friend std::ostream &operator<<(std::ostream &os, const GameManager &game);
+
 private:
   Board gameBoard;
   DataSaver gameDatas;
@@ -13,6 +15,7 @@ private:
   ChessPiece currentPlayer;
   BattleResult battleState;
   Chess lastlyChess;
+  Distance_calculator distanceCalculator;
 
   void refreshBattleState();
 
@@ -27,8 +30,6 @@ public:
 
   std::pair<int, int> overTime();
 
-  std::pair<int, int> takeBackAMove();
-
   std::string saveData();
 
   void reset();
@@ -38,6 +39,4 @@ public:
   std::pair<int, int> AiPutChess();
 
   std::pair<int, int> takeBack();
-
-  void showBoard() const;
 };

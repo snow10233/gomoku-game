@@ -4,10 +4,14 @@ int AiPlayer::getThisPosScore(const ChessPiece player, const Board &gameBoard,
                               const int x, const int y) const {
   std::vector<int> lengths;
 
-  lengths.push_back(gameBoard.getHorizontalDistance(player, x, y));
-  lengths.push_back(gameBoard.getVerticalDistance(player, x, y));
-  lengths.push_back(gameBoard.getLeftDiagonalDistance(player, x, y));
-  lengths.push_back(gameBoard.getRightDiagonalDistance(player, x, y));
+  lengths.push_back(
+      distanceCalculator.getHorizontalDistance(gameBoard, player, x, y));
+  lengths.push_back(
+      distanceCalculator.getVerticalDistance(gameBoard, player, x, y));
+  lengths.push_back(
+      distanceCalculator.getLeftDiagonalDistance(gameBoard, player, x, y));
+  lengths.push_back(
+      distanceCalculator.getRightDiagonalDistance(gameBoard, player, x, y));
 
   int score = 0;
 
@@ -19,9 +23,8 @@ int AiPlayer::getThisPosScore(const ChessPiece player, const Board &gameBoard,
   return score;
 }
 
-std::pair<int, int> AiPlayer::aiFindBestPos(const ChessPiece player,
-                                            Board &gameBoard, const int x,
-                                            const int y) const {
+std::pair<int, int> AiPlayer::findBestPos(const ChessPiece player,
+                                          Board &gameBoard) const {
   AICalculatePair aiScore{{0, 0}, 0};
   AICalculatePair playerScore{{0, 0}, 0};
 

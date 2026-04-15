@@ -17,6 +17,7 @@ set(SOURCES
     src/game_manager.cpp
     src/main.cpp
     src/state.cpp
+    src/distance_calculator.cpp
 )
 # 告訴 CMake 匯出編譯指令的詳細資訊
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

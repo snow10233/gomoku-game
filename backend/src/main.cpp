@@ -42,16 +42,17 @@ int main() {
 
           auto putChessResultState = singleGameManager.putChess(col, row);
 
-          pair<int, int> step = {-1, -1};
+          pair<int, int> aiStep = {-2, -2}; // -2 -2為悔棋代號
 
-          if (putChessResultState == PutChessResult::SUCCESS) {
-            step = singleGameManager.AiPutChess();
+          if (putChessResultState == PutChessResult::SUCCESS &&
+              singleGameManager.getBattleState() == BattleResult::CONTINUE) {
+            aiStep = singleGameManager.AiPutChess();
           }
 
           cout << putChessResultState << " ";
           cout << singleGameManager.getBattleState() << " ";
-          cout << step.first << " ";
-          cout << step.second << endl;
+          cout << aiStep.first << " ";
+          cout << aiStep.second << endl;
         } else if (action == "TAKE_BACK") {
           auto aiDelete = singleGameManager.takeBack();
 

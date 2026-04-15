@@ -44,12 +44,15 @@ class SingleNewPage(QWidget):
 
         self.btn_undo_enable = True
         self.btn_timer_enable = True
+        self.btn_reset_enable = True
         self.btn_can_undo = MenuButton("開啟悔棋功能", self)
         self.btn_can_timer = MenuButton("開啟落子限時", self)
+        self.btn_can_reset = MenuButton("開啟重置棋盤", self)
 
         layout.addWidget(self.btn_start)
         layout.addWidget(self.btn_can_undo)
         layout.addWidget(self.btn_can_timer)
+        layout.addWidget(self.btn_can_reset)
         layout.addWidget(self.btn_back)
 
         main_layout.addLayout(layout)
@@ -58,6 +61,7 @@ class SingleNewPage(QWidget):
         self.btn_start.clicked.connect(self.request_start_game.emit)
         self.btn_can_undo.clicked.connect(self.can_undo_onclick)
         self.btn_can_timer.clicked.connect(self.can_timer_onclick)
+        self.btn_can_reset.clicked.connect(self.can_reset_onclick)
         self.btn_back.clicked.connect(self.request_home.emit)
 
     def show_wip(self):
@@ -123,3 +127,33 @@ class SingleNewPage(QWidget):
               """
             )
             self.btn_can_timer.setText("關閉落子限時")
+
+    def can_reset_onclick(self):
+        self.btn_reset_enable = not self.btn_reset_enable
+
+        if self.btn_reset_enable:
+            self.btn_can_reset.setStyleSheet(
+                """
+              QPushButton { 
+                  background-color: #4CAF50;
+                  color: white;
+                  border-radius: 10px;
+                  font-size: 18px;
+              }
+              QPushButton:hover { background-color: #45a049; }
+              """
+            )
+            self.btn_can_reset.setText("開啟重置棋盤")
+        else:
+            self.btn_can_reset.setStyleSheet(
+                """
+              QPushButton { 
+                  background-color: #FF0000;
+                  color: white;
+                  border-radius: 10px;
+                  font-size: 18px;
+              }
+              QPushButton:hover { background-color: #C70000; }
+              """
+            )
+            self.btn_can_reset.setText("關閉重置棋盤")

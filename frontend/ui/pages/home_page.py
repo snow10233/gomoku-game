@@ -43,14 +43,12 @@ class HomePage(QWidget):
 
         # 建立按鈕
         self.btn_single = MenuButton("單人模式 (AI)", self)
-        self.btn_multi = MenuButton("雙人模式 (P2P)", self)
-        self.btn_load = MenuButton("載入棋局", self)
+        self.btn_multi = MenuButton("雙人模式", self)
         self.btn_replay = MenuButton("回放棋局", self)
 
         # 添加按鈕
         layout.addWidget(self.btn_single)
         layout.addWidget(self.btn_multi)
-        layout.addWidget(self.btn_load)
         layout.addWidget(self.btn_replay)
 
         main_layout.addLayout(layout)
@@ -58,7 +56,6 @@ class HomePage(QWidget):
         # 綁定按鈕事件
         self.btn_single.clicked.connect(self.request_single_player.emit)
         self.btn_multi.clicked.connect(self.request_multi_player.emit)  # 暫未開放
-        self.btn_load.clicked.connect(self.show_wip)  # 暫未開放
         self.btn_replay.clicked.connect(self.show_wip)  # 暫未開放
 
     def show_wip(self):

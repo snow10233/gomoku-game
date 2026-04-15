@@ -10,6 +10,7 @@ class GomokuBoard(QWidget):
     def __init__(self):
         super().__init__()
         self.board = [[0 for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
+        self.preview_player = 1  # 1 黑棋, 2 白棋
         window_size = (BOARD_SIZE - 1) * GRID_SIZE + MARGIN * 2
         self.setFixedSize(window_size, window_size)
         self.setStyleSheet("background-color: #E6B97A;")  # 經典木板色
@@ -41,11 +42,15 @@ class GomokuBoard(QWidget):
             x = MARGIN + col * GRID_SIZE
             y = MARGIN + row * GRID_SIZE
 
-            # 畫一個半透明的黑子 (用來預覽)
-            # 顏色設定：黑色的 RGBA (0, 0, 0, 100)，100 是透明度 (0~255)
-            preview_color = QColor(0, 0, 0, 100)
+            # 根據當前回合玩家繪製預覽棋子
+            if self.preview_player == 1:
+                preview_color = QColor(0, 0, 0, 100)
+                preview_pen = Qt.PenStyle.NoPen
+            else:
+                preview_color = QColor(255, 255, 255, 150)
+                preview_pen = QPen(Qt.black, 1)
             painter.setBrush(QBrush(preview_color))
-            painter.setPen(Qt.PenStyle.NoPen)  # 不要邊框
+            painter.setPen(preview_pen)
 
             radius = GRID_SIZE // 2 - 2
             painter.drawEllipse(x - radius, y - radius, radius * 2, radius * 2)
@@ -92,3 +97,8 @@ class GomokuBoard(QWidget):
             row = round((event.y() - MARGIN) / GRID_SIZE)
             if 0 <= col < BOARD_SIZE and 0 <= row < BOARD_SIZE:
                 self.clicked_pos.emit(col, row)
+
+    def set_preview_player(self, player):
+        """設定懸停預覽棋子的顏色。1: 黑棋, 2: 白棋。"""
+        self.preview_player = 1 if player != 2 else 2
+        self.update()
