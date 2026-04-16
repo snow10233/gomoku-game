@@ -9,7 +9,7 @@ from ui.pages import (
     SingleGamePage,
     SingleChooseModePage,
 )
-
+from sound.audio_manager import AudioManager
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -28,12 +28,18 @@ class MainWindow(QMainWindow):
         self.single_game_page = SingleGamePage()
         self.multi_remote_page = MultiRemotePage()
 
+        # 初始化音效管理器
+        self.audio = AudioManager()
+
         self.router.register(Route.HOME, self.home_page)
         self.router.register(Route.SINGLE_CHOOSE_MODE, self.single_choose_mode_page)
         self.router.register(Route.SINGLE_NEW_GAME, self.single_new_page)
         self.router.register(Route.SINGLE_GAME, self.single_game_page)
         self.router.register(Route.MULTI_REMOTE, self.multi_remote_page)
         self.router.go(Route.HOME)
+
+        #2. 啟動首頁音樂
+        self.audio.play_bgm("menu")
 
         # 🌟 綁定所有的頁面跳轉邏輯
         self.home_page.request_single_player.connect(self.go_to_single_choose_mode_page)
@@ -55,6 +61,8 @@ class MainWindow(QMainWindow):
     def go_to_home_page(self):
         print("切換回主選單，發送 {HOME_PAGE}")
 
+        self.audio.play_bgm("menu", fade_ms=1500)
+
         current_route = self.router.current_route()
         if current_route == Route.SINGLE_GAME:
             self.single_game_page.end_game()
@@ -69,6 +77,9 @@ class MainWindow(QMainWindow):
     def go_to_single_game_page(self):
         # print("切換至遊戲畫面，發送 {AI_MODE}")
         self.router.go(Route.SINGLE_GAME)
+
+        self.audio.play_bgm("play", fade_ms=1000)
+        
         undo_enable = self.single_new_page.btn_undo_enable
         timer_enable = self.single_new_page.btn_timer_enable
         reset_enable = self.single_new_page.btn_reset_enable
