@@ -109,23 +109,41 @@ class GamePage(QWidget):
         print("發送 {OVER_TIME}")
 
         # 呼叫我們剛剛在 Engine 寫好的函式
-        put_result, board_state, ai_x, ai_y = self.engine.over_time()
+        result = self.engine.over_time()
 
-        
+        if self.engine.mode == "AI_MODE":
+            put_result, board_state, ai_x, ai_y = result
+            self.show_battle_result(board_state)  # 檢查遊戲是否結束
 
-        if put_result == "SUCCESS":
-            # 幫 AI 落子
-            self.board_widget.board[ai_y][ai_x] = 2
-            # AI 模式固定由玩家(黑棋)操作，超時後仍回到黑棋回合
-            self.now_player = 1
-            self.player_title.setText("黑棋回合")
-            self.board_widget.set_preview_player(1)
+            if put_result:
+                # 幫 AI 落子
+                self.board_widget.board[int(ai_y)][int(ai_x)] = 2
+                # AI 模式固定由玩家(黑棋)操作，超時後仍回到黑棋回合
+                self.now_player = 1
+                self.player_title.setText("黑棋回合")
+                self.board_widget.set_preview_player(1)
 
-            # 畫面重繪
-            self.board_widget.update()
-            self.timer_label.reset()
-        else:
-            print("C++ 引擎拒絕了這步棋！")
+                # 畫面重繪
+                self.board_widget.update()
+
+                # 只有遊戲未結束才重置計時器
+                if board_state == "CONTINUE":
+                    self.timer_label.reset()
+            else:
+                print("C++ 引擎拒絕了超時操作！")
+        elif self.engine.mode == "TWO_PLAYER_MODE":
+            # 雙人模式下不需要 AI 落子邏輯
+            put_result, board_state = result
+            self.show_battle_result(board_state)  # 檢查遊戲是否結束
+
+            if put_result:
+                # 只有遊戲未結束才切換玩家重置計時器
+                if board_state == "CONTINUE":
+                    self.switch_player()
+                    self.timer_label.reset()
+                self.board_widget.update()
+            else:
+                print("C++ 引擎拒絕了超時操作！")
 
     def handle_user_move(self, col, row):
         """玩家點擊棋盤時觸發的真正邏輯"""
@@ -133,34 +151,54 @@ class GamePage(QWidget):
         if self.board_widget.board[row][col] != 0:
             return
 
-        put_result, board_state, ai_x, ai_y = self.engine.put_chess(col, row)
+        result = self.engine.put_chess(col, row)
 
-        self.show_battle_result(board_state)  # 無論成功與否都要檢查是否有勝負結果需要顯示
+        if self.engine.mode == "AI_MODE":
+            put_result, board_state, ai_x, ai_y = result
+            self.show_battle_result(
+                board_state
+            )  # 無論成功與否都要檢查是否有勝負結果需要顯示
 
-        if put_result:
-            # str -> intvi
-            ai_x = int(ai_x)
-            ai_y = int(ai_y)
+            if put_result:
+                # AI 模式固定：玩家為黑棋
+                self.board_widget.board[row][col] = 1
 
-            # 1. AI 模式固定：玩家為黑棋
-            self.board_widget.board[row][col] = 1
+                # 幫 AI 落子
+                if ai_x != -1 and ai_y != -1:  # -1 -1為錯誤代號
+                    self.board_widget.board[int(ai_y)][int(ai_x)] = 2
 
-            # 2. 幫 AI 落子
-            if ai_x != -2 and ai_y != -2:  # -2 -2為悔棋代號
-                self.board_widget.board[ai_y][ai_x] = 2
+                # 顯示與預覽維持玩家黑棋回合
+                self.now_player = 1
+                self.player_title.setText("黑棋回合")
+                self.board_widget.set_preview_player(1)
 
-            # 3. 顯示與預覽維持玩家黑棋回合
-            self.now_player = 1
-            self.player_title.setText("黑棋回合")
-            self.board_widget.set_preview_player(1)
+                # 觸發畫面重繪
+                self.board_widget.update()
 
-            # 4. 觸發畫面重繪 & 重置計時器
-            self.board_widget.update()
-            self.timer_label.reset()
+                # 只有遊戲未結束才重置計時器
+                if board_state == "CONTINUE":
+                    self.timer_label.reset()
 
-            print(f"當前棋盤狀態: {board_state}")
-        else:
-            print(f"落子失敗 原因:{put_result}")
+                print(f"當前棋盤狀態: {board_state}")
+            else:
+                print(f"落子失敗")
+        elif self.engine.mode == "TWO_PLAYER_MODE":
+            put_result, board_state = result
+            self.show_battle_result(board_state)
+
+            if put_result:
+                self.board_widget.board[row][col] = self.now_player
+
+                if board_state not in ("BLACK_WIN", "WHITE_WIN", "DRAW", "CONTINUE"):
+                    print(f"未知的棋盤狀態: {board_state}")
+                    return
+
+                self.board_widget.update()
+                if board_state == "CONTINUE":
+                    self.switch_player()
+                    self.timer_label.reset()
+            else:
+                print(f"落子失敗")
 
     def handle_undo(self):
         """處理玩家按下悔棋按鈕的邏輯"""
@@ -187,9 +225,9 @@ class GamePage(QWidget):
 
     def handle_reset(self):
         """處理玩家按下RESET按鈕的邏輯"""
-        print("玩家要求悔棋，發送 {RESET}")
+        print("玩家要求重置棋盤，發送 {RESET}")
 
-        success = self.engine.send_command("RESET")
+        success = self.engine.reset()
         if success:
             self.board_widget.board = [[0 for _ in range(15)] for _ in range(15)]
             self.now_player = 1
@@ -201,10 +239,10 @@ class GamePage(QWidget):
             print(f"C++重置失敗")
 
     def start_game(self, undo_enable, timer_enable, reset_enable):
-        """當從首頁切換過來時，呼叫這個來初始化"""
+        """當從首頁切換過來時，呼叫這個來初始化 (AI 模式)"""
         self.overlay.hide()
         # 告訴 C++ 我們要開始新遊戲了，讓它做好準備
-        success = self.engine.send_command("AI_MODE")
+        success = self.engine.ai_mode()
         if success:
             # 重置棋盤
             self.board_widget.board = [[0 for _ in range(15)] for _ in range(15)]
@@ -238,7 +276,7 @@ class GamePage(QWidget):
 
     def end_game(self):
         """當切換回首頁時，呼叫這個來清空棋盤"""
-        success = self.engine.send_command("HOME_PAGE")
+        success = self.engine.home_page()
         if success:
             print("C++ 已切換至 HOME_PAGE")
             # 暫停計時器

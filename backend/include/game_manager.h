@@ -28,7 +28,7 @@ public:
 
   BattleResult getBattleState() const;
 
-  std::pair<int, int> overTime();
+  std::pair<int, int> overTime(bool isAiMode);
 
   std::string saveData();
 
