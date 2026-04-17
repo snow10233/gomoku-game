@@ -13,7 +13,7 @@ from ui.pages import (
     SingleGamePage,
     SingleChooseModePage,
 )
-from sound.audio_manager import AudioManager
+from assets.audio.audio_manager import AudioManager
 
 class MainWindow(QMainWindow):
     def __init__(self):
