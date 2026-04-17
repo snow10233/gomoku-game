@@ -11,7 +11,7 @@ class SingleNewPage(QWidget):
     request_home = Signal()
     request_start_game = Signal()
 
-    def __init__(self):
+    def __init__(self, title_text="單人模式 (AI)"):
         super().__init__()
 
         main_layout = QVBoxLayout(self)
@@ -23,7 +23,7 @@ class SingleNewPage(QWidget):
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.setSpacing(20)
 
-        title = QLabel("單人模式 (AI)")
+        title = QLabel(title_text)
         title.setStyleSheet(
             """
             background-color: #4f4f4f;
