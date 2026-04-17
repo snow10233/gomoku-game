@@ -6,3 +6,5 @@ from .single.single_game_page import SingleGamePage
 from .multi.multi_remote_page import MultiRemotePage
 from .multi.multi_game_page import MultiGamePage
 from .multi.multi_choose_mode_page import MultiChooseModePage
+from .multi.multi_local_choose_mode_page import MultiLocalChooseModePage
+from .multi.multi_local_new_page import MultiLocalNewPage

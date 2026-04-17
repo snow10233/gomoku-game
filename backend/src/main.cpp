@@ -76,13 +76,14 @@ int main() {
           cout << playerDelete.first << " ";
           cout << playerDelete.second << endl;
         } else if (action == "OVER_TIME") {
-          auto step = singleGameManager.overTime();
+          auto step = singleGameManager.overTime(true);
 
           cout << "SUCCESS" << " ";
           cout << singleGameManager.getBattleState() << " ";
           cout << step.first << " ";
           cout << step.second << endl;
         } else if (action == "SAVE") {
+          cout << "AI_MODE " << endl;
           cout << singleGameManager.saveData() << endl;
         } else if (action == "HOME_PAGE") {
           singleGameManager.reset();
@@ -93,14 +94,65 @@ int main() {
 
         // cout << singleGameManager << endl;
       }
-    } else if (gameMode == "TWO_PLAYER_MODE") {
+    } else if (gameMode == "RELOAD_MODE") {
       // 敬請期待
-
     } else if (gameMode == "REVIEW_MODE") {
       // 敬請期待
 
-    } else if (gameMode == "RELOAD_MODE") {
-      // 敬請期待
+    } else if (gameMode == "TWO_PLAYER_MODE") {
+      GameManager multiGameManager{BOARDSIZE};
+      string action;
+
+      while (true) {
+        cin >> action;
+
+        if (!CONSOLE_UI::isGameActionInputValid(action)) {
+          cout << "INVALID" << endl;
+          continue;
+        }
+        cout << "SUCCESS" << endl;
+
+        if (action == "PUT_CHESS") {
+          int col = 0, row = 0;
+          cin >> col >> row;
+
+          if (!CONSOLE_UI::isInputValid()) {
+            cout << "INVALID CONTINUE" << endl;
+            continue;
+          }
+
+          auto putChessResultState = multiGameManager.putChess(col, row);
+
+          cout << putChessResultState << " ";
+          cout << multiGameManager.getBattleState() << endl;
+        } else if (action == "TAKE_BACK") {
+          auto playerDelete = multiGameManager.takeBack();
+
+          if (playerDelete.first == -1) {
+            cout << "INVALID -1 -1" << endl;
+            continue;
+          }
+
+          cout << "SUCCESS" << " ";
+          cout << playerDelete.first << " ";
+          cout << playerDelete.second << endl;
+        } else if (action == "OVER_TIME") {
+          multiGameManager.overTime(false);
+
+          cout << "SUCCESS" << " ";
+          cout << multiGameManager.getBattleState() << endl;
+        } else if (action == "SAVE") {
+          cout << "TWO_PLAYER_MODE " << endl;
+          cout << multiGameManager.saveData() << endl;
+        } else if (action == "HOME_PAGE") {
+          multiGameManager.reset();
+          break;
+        } else if (action == "RESET") {
+          multiGameManager.reset();
+        }
+
+        // cout << multiGameManager << endl;
+      }
     }
   }
 }
