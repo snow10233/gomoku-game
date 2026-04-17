@@ -8,6 +8,10 @@ class Route(str, Enum):
     SINGLE_CHOOSE_MODE = "single_choose_mode"
     SINGLE_NEW_GAME = "single_new_game"
     SINGLE_GAME = "single_game"
+    MULTI_CHOOSE_MODE = "multi_choose_mode"
+    MULTI_LOCAL_CHOOSE_MODE = "multi_local_choose_mode"
+    MULTI_NEW_GAME = "multi_new_game"
+    MULTI_GAME = "multi_game"
     MULTI_REMOTE = "multi_remote"
 
 

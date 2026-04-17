@@ -40,12 +40,17 @@ ChessPiece GameManager::getCurrentPlayer() const { return currentPlayer; }
 
 BattleResult GameManager::getBattleState() const { return battleState; }
 
-std::pair<int, int> GameManager::overTime() {
+std::pair<int, int> GameManager::overTime(bool isAiMode) {
   // 將-2 -2寫入data做為佔位使用 後續進行存檔才不會亂
   gameDatas.addData(-2, -2);
   changePlayer();
 
-  return AiPutChess();
+  if(isAiMode) {
+    return AiPutChess();
+  }
+
+  // 不重要的回傳值 因為前端不會使用到
+  return {-1, -1};
 }
 
 std::pair<int, int> GameManager::takeBack() {
