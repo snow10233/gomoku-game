@@ -7,3 +7,4 @@ venv/
 .cursor/
 CMakeSettings.json
 CppProperties.json
+AGENTS.md
