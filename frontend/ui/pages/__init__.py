@@ -8,3 +8,4 @@ from .multi.multi_game_page import MultiGamePage
 from .multi.multi_choose_mode_page import MultiChooseModePage
 from .multi.multi_local_choose_mode_page import MultiLocalChooseModePage
 from .multi.multi_local_new_page import MultiLocalNewPage
+from .replay_page import ReplayPage

@@ -9,6 +9,7 @@ from ui.pages import (
     MultiLocalChooseModePage,
     MultiLocalNewPage,
     MultiRemotePage,
+    ReplayPage,
     SingleNewPage,
     SingleGamePage,
     SingleChooseModePage,
@@ -35,6 +36,7 @@ class MainWindow(QMainWindow):
         self.multi_local_new_page = MultiLocalNewPage()
         self.multi_game_page = MultiGamePage()
         self.multi_remote_page = MultiRemotePage()
+        self.replay_page = ReplayPage()
 
         # 初始化音效管理器
         self.audio = AudioManager()
@@ -150,24 +152,43 @@ class MainWindow(QMainWindow):
         self.multi_game_page.start_game(undo_enable, timer_enable, reset_enable)
 
     def load_single_game(self):
-        """打开文件选择对话框来加载单人游戏"""
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, "选择要加载的游戏文件", "", "Gomoku Files (*.pgn);;All Files (*)"
-        )
-        if file_path:
-            print(f"加载单人游戏文件: {file_path}")
-            # TODO: 实现游戏加载逻辑
-            self.go_to_single_game_page()
+        self._load_game_file(expected_mode="AI_MODE")
 
     def load_multi_game(self):
-        """打开文件选择对话框来加载本地双人游戏"""
+        self._load_game_file(expected_mode="TWO_PLAYER_MODE")
+
+    def _load_game_file(self, expected_mode):
         file_path, _ = QFileDialog.getOpenFileName(
-            self, "选择要加载的游戏文件", "", "Gomoku Files (*.pgn);;All Files (*)"
+            self, "選擇要載入的棋局檔", "", "Gomoku Files (*.gmk);;All Files (*)"
         )
-        if file_path:
-            print(f"加载双人游戏文件: {file_path}")
-            # TODO: 实现游戏加载逻辑
-            self.go_to_multi_game_page()
+        if not file_path:
+            return
+
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                sub_mode = f.readline().strip()
+                replay = f.readline().strip()
+        except OSError as err:
+            print(f"讀取棋局檔失敗: {err}")
+            return
+
+        if sub_mode != expected_mode:
+            print(f"棋局檔模式不符，檔案為 {sub_mode}，此入口為 {expected_mode}")
+            return
+
+        target_page = (
+            self.single_game_page
+            if sub_mode == "AI_MODE"
+            else self.multi_game_page
+        )
+
+        if sub_mode == "AI_MODE":
+            self.router.go(Route.SINGLE_GAME)
+            self.audio.play_bgm("play", fade_ms=1000)
+        else:
+            self.router.go(Route.MULTI_GAME)
+
+        target_page.resume_from_replay(sub_mode, replay)
 
 
 if __name__ == "__main__":
