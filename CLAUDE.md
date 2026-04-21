@@ -91,3 +91,23 @@ Tokens: `<col-letter><row-number>` where `A..O` = column `0..14`. `OT` is the ti
 - `docs/save-format.md` — `.gmk` token grammar
 - `docs/roadmap.md` — feature progress checklist
 - `docs/getting-started.md`, `docs/development.md`, `docs/troubleshooting.md` — setup / WSL font notes
+
+## TODO / Known Gaps
+
+Outstanding roadmap work (see `docs/roadmap.md` for scoring context):
+
+- **Audio SFX wiring**: `AudioManager` has BGM crossfade working, but `soundeffect/place.wav`, `victory.mp3`, `fail.mp3` are **not yet registered in `AudioManager.songs`** and `play_sfx` is never called. Planned triggers:
+  - Placement sound: AI mode plays once per round (after AI also moves); local multi plays on every move.
+  - Victory: AI mode only when BLACK wins; local multi plays on any winner (label still shows who won).
+  - Defeat: AI mode only when BLACK loses; local multi doesn't play defeat.
+  - No "game start" sound.
+- **Network multiplayer (`MultiRemotePage`)**: explicitly deferred — "建立房間" / "加入房間" still route through `WipDialog`. No socket layer, no remote protocol.
+- **Replay button hookup**: `HomePage.btn_replay` still calls `show_wip()`; needs to route to `ReplayPage` via a new `request_replay` signal wired in `main.py`.
+- **Dead files to clean when convenient**: `frontend/ui/pages/choose_mode_page.py` and `frontend/ui/pages/multi/multi_local_page.py` are empty and unimported.
+- **README typo**: `pip install -r requirement.txt` should be `requirements.txt`.
+
+Recently resolved (so don't re-report as bugs):
+- `GameManager::takeBack()` now handles OT placeholders by swapping player and recursing to pop the real previous stone.
+- `MultiGamePage.handle_undo` now swaps the active player after a single-stone undo.
+- `GomokuEngine.save()` now reads both mode line and replay line (previously only read one, leaving the other in the pipe).
+- `RELOAD_MODE` is fully implemented on both sides; save/load via `.gmk` files works through `GamePage.handle_save` / `MainWindow._load_game_file`.
