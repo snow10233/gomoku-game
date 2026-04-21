@@ -64,6 +64,13 @@ class MainWindow(QMainWindow):
 
         self.single_game_page.request_home.connect(self.go_to_home_page)  # 遊戲 -> 首頁
 
+        # 🌟 綁定勝負音效信號
+        self.single_game_page.win_signal.connect(lambda: self.audio.play_sfx("victory"))
+        self.single_game_page.lose_signal.connect(lambda: self.audio.play_sfx("defeat"))
+
+        # 綁定落子音效信號
+        self.single_game_page.place_signal.connect(lambda: self.audio.play_sfx("place"))
+
         self.multi_choose_mode_page.request_local_game.connect(
             self.go_to_multi_local_choose_mode_page
         )
