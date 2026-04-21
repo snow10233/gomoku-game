@@ -30,6 +30,7 @@ class AudioManager(QObject):
             "play": os.path.join(base_dir, "backgroundmusic", "game.mp3"),
             "victory": os.path.join(base_dir, "soundeffect", "victory.mp3"),
             "defeat": os.path.join(base_dir, "soundeffect", "fail.mp3"),
+            "place": os.path.join(base_dir, "soundeffect", "place.wav"),
         }
 
         print(f"載入選單音樂: {self.songs['menu']}")
