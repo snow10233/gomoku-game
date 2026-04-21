@@ -13,6 +13,7 @@ class Route(str, Enum):
     MULTI_NEW_GAME = "multi_new_game"
     MULTI_GAME = "multi_game"
     MULTI_REMOTE = "multi_remote"
+    REPLAY = "replay"
 
 
 class Router:

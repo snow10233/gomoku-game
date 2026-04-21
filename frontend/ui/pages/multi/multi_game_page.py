@@ -1,10 +1,26 @@
 from ..game_page import GamePage
+from ui.components import AlertDialog
 
 
 class MultiGamePage(GamePage):
     def __init__(self):
         super().__init__()
         self.timer_enabled = True
+
+    def handle_undo(self):
+        """本地雙人：悔棋只退一顆，需要把回合切換回上一位玩家。"""
+        success, undo_positions = self.engine.undo()
+        if not success:
+            AlertDialog("無法悔棋！(已經退回原點)", self).exec()
+            return
+
+        for x, y in undo_positions:
+            if 0 <= x < 15 and 0 <= y < 15:
+                self.board_widget.board[y][x] = 0
+
+        self.switch_player()
+        self.board_widget.update()
+        self.timer_label.reset()
 
     def handle_user_move(self, col, row):
         """本地雙人：每次點擊只落目前玩家的一顆棋。"""

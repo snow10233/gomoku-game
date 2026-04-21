@@ -7,6 +7,8 @@ from settings import WINDOW_WIDTH, WINDOW_HEIGHT
 
 class BattleResult(QWidget):
     request_home = Signal()
+    request_save = Signal()
+    request_copy = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -21,7 +23,7 @@ class BattleResult(QWidget):
         # 2. 佈局設計
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignCenter)
-        layout.setSpacing(30)
+        layout.setSpacing(20)
 
         # 勝利標籤 (置中)
         self.label = QLabel("請輸入文本", self)
@@ -29,12 +31,17 @@ class BattleResult(QWidget):
         self.label.setFont(QFont("Arial", 48, QFont.Bold))
         self.label.setAlignment(Qt.AlignCenter)
 
-        # 返回按鈕
+        self.btn_save = GameButton("儲存棋譜", self)
+        self.btn_copy = GameButton("複製棋譜", self)
         self.btn_back = GameButton("返回首頁", self)
+
+        self.btn_save.clicked.connect(self.request_save.emit)
+        self.btn_copy.clicked.connect(self.request_copy.emit)
         self.btn_back.clicked.connect(self.handle_back_home)
 
-        # 3. 安排位置：標籤在中上，按鈕在中下
         layout.addWidget(self.label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.btn_save, alignment=Qt.AlignCenter)
+        layout.addWidget(self.btn_copy, alignment=Qt.AlignCenter)
         layout.addWidget(self.btn_back, alignment=Qt.AlignCenter)
 
         self.setVisible(False)  # 預設隱藏

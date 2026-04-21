@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
+    QFileDialog,
 )
 from PySide6.QtCore import Qt, Signal
 from core.engine import GomokuEngine
@@ -76,10 +77,12 @@ class GamePage(QWidget):
         # --- 按鈕設置 ---
         self.btn_undo = GameButton("悔棋", self)
         self.btn_reset = GameButton("重置棋盤", self)
+        self.btn_save = GameButton("儲存棋譜", self)
         self.btn_back = GameButton("返回主選單", self)
 
         bottom_right_layout.addWidget(self.btn_undo)
         bottom_right_layout.addWidget(self.btn_reset)
+        bottom_right_layout.addWidget(self.btn_save)
         bottom_right_layout.addWidget(self.btn_back)
 
         # --- 組合 ---
@@ -97,8 +100,11 @@ class GamePage(QWidget):
         self.timer_label.time_out.connect(self.handle_time_out)
         self.btn_reset.clicked.connect(self.handle_reset)
         self.btn_undo.clicked.connect(self.handle_undo)
+        self.btn_save.clicked.connect(self.handle_save)
         self.btn_back.clicked.connect(self.request_home.emit)
         self.overlay.request_home.connect(self.request_home.emit)
+        self.overlay.request_save.connect(self.handle_save)
+        self.overlay.request_copy.connect(self.handle_copy_replay)
 
     def switch_player(self):
         """切換玩家並更新標題"""
@@ -292,6 +298,96 @@ class GamePage(QWidget):
             self.timer_label.timer.stop()
         else:
             print("C++切換失敗")
+
+    def handle_save(self):
+        """將目前棋局透過後端 SAVE 指令取出，並寫入 .gmk 檔。"""
+        success, mode, board_state = self.engine.save()
+        if not success:
+            AlertDialog("儲存失敗！", self).exec()
+            return
+
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "儲存棋譜", "", "Gomoku Files (*.gmk)"
+        )
+        if not file_path:
+            return
+        if not file_path.endswith(".gmk"):
+            file_path += ".gmk"
+
+        try:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(f"{mode}\n{board_state}\n")
+        except OSError as err:
+            AlertDialog(f"寫入失敗：{err}", self).exec()
+            return
+        AlertDialog("已儲存棋譜！", self).exec()
+
+    def handle_copy_replay(self):
+        """將當前棋譜字串複製到剪貼簿 (結果分享用)。"""
+        from PySide6.QtWidgets import QApplication
+
+        success, _, board_state = self.engine.save()
+        if not success or board_state is None:
+            AlertDialog("取得棋譜失敗！", self).exec()
+            return
+        QApplication.clipboard().setText(board_state)
+        AlertDialog("棋譜已複製到剪貼簿！", self).exec()
+
+    def resume_from_replay(self, sub_mode, replay):
+        """從儲存檔載入：交棒給後端 RELOAD_MODE 並把棋盤重現到畫面上。"""
+        self.overlay.hide()
+        if not self.engine.reload_mode(sub_mode, replay):
+            AlertDialog("載入失敗！", self).exec()
+            self.request_home.emit()
+            return
+
+        self.board_widget.board = [[0 for _ in range(15)] for _ in range(15)]
+        steps = self._parse_replay(replay)
+
+        # AI_MODE 玩家固定黑；雙人則看步數奇偶
+        player_turn = 1
+        for step in steps:
+            if step == "OT":
+                player_turn = 2 if player_turn == 1 else 1
+                continue
+            col, row = step
+            self.board_widget.board[row][col] = player_turn
+            player_turn = 2 if player_turn == 1 else 1
+
+        if sub_mode == "AI_MODE":
+            self.now_player = 1
+            self.player_title.setText("黑棋回合")
+        else:
+            self.now_player = player_turn
+            self.player_title.setText(
+                "黑棋回合" if player_turn == 1 else "白棋回合"
+            )
+
+        self.board_widget.set_preview_player(self.now_player)
+        self.board_widget.update()
+
+        # 功能按鈕：載入流程保持全開
+        self.btn_undo.setVisible(True)
+        self.btn_reset.setVisible(True)
+        self.btn_save.setVisible(True)
+        self.timer_label.setVisible(True)
+        self.timer_label.switch(True)
+        self.timer_label.start_timer()
+
+    @staticmethod
+    def _parse_replay(replay):
+        steps = []
+        for token in replay.split():
+            if token == "OT":
+                steps.append("OT")
+                continue
+            if len(token) < 2 or not ("A" <= token[0] <= "O"):
+                continue
+            try:
+                steps.append((ord(token[0]) - ord("A"), int(token[1:])))
+            except ValueError:
+                continue
+        return steps
 
     def show_battle_result(self, result):
         """顯示勝負結果的覆蓋層"""

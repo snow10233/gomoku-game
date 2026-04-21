@@ -4,7 +4,7 @@ GRID_SIZE = 40
 MARGIN = 40
 
 # 遊戲設定
-TIME_LIMIT = 2
+TIME_LIMIT = 60
 
 # 視窗設定
 WINDOW_WIDTH = 800

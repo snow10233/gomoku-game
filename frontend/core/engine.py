@@ -46,12 +46,28 @@ class GomokuEngine:
             self.mode = "TWO_PLAYER_MODE"
         return success
 
-    def reload_mode(self):
-        """載入舊棋局"""
-        success = self.send_command("RELOAD_MODE")
-        if success:
-            self.mode = "RELOAD_MODE"  # 載入後會是原本的模式
-        return success
+    def reload_mode(self, sub_mode, board_state):
+        """載入舊棋局：依協議 A 送兩行 (子模式 + 棋譜字串)。"""
+        if not self.process:
+            return False
+        if sub_mode not in ("AI_MODE", "TWO_PLAYER_MODE"):
+            return False
+
+        if not self.send_command("RELOAD_MODE"):
+            return False
+
+        print(f"py -> {sub_mode} -> cpp")
+        print(f"py -> {board_state} -> cpp")
+        self.process.stdin.write(f"{sub_mode}\n{board_state}\n")
+        self.process.stdin.flush()
+
+        resp = self.process.stdout.readline().strip()
+        print(f"cpp -> {resp} -> py")
+        if resp != "SUCCESS":
+            return False
+
+        self.mode = sub_mode
+        return True
 
     def home_page(self):
         """返回主選單"""
@@ -176,23 +192,23 @@ class GomokuEngine:
 
     def save(self):
         """
-        執行 SAVE 流程，返回遊戲模式與棋局 PNG 字串
+        執行 SAVE 流程：回傳 (success, mode, board_state)。
+        後端依序送出 SUCCESS -> 模式行 -> 棋譜行，全都要讀乾淨。
         """
         if not self.process:
             return False, None, None
 
-        # 1. 傳送指令並讀取第一次確認
         success = self.send_command("SAVE")
         if not success:
             return False, None, None
 
-        # 2. 讀取棋局 PNG 字串
+        mode_line = self.process.stdout.readline().strip()
+        print(f"cpp -> {mode_line} -> py")
+
         board_state = self.process.stdout.readline().strip()
         print(f"cpp -> {board_state} -> py")
 
-        # 返回 (success, mode, board_state)
-        # 前端負責將棋局寫入檔案時，第一行寫入 mode，第二行寫入 board_state
-        return True, self.mode, board_state
+        return True, mode_line, board_state
 
     def review_mode(self):
         """進入回放模式"""

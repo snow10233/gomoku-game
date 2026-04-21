@@ -60,9 +60,16 @@ std::pair<int, int> GameManager::takeBack() {
     return dataTemp;
   }
 
-  gameBoard.takeBack(lastlyChess.x, lastlyChess.y);
-  lastlyChess.x = gameDatas.getTop().first;
-  lastlyChess.y = gameDatas.getTop().second;
+  // OT 佔位：只換手、不退棋，然後再退一步真正的棋
+  if (dataTemp.first == -2) {
+    changePlayer();
+    return takeBack();
+  }
+
+  gameBoard.takeBack(dataTemp.first, dataTemp.second);
+  auto nextTop = gameDatas.getTop();
+  lastlyChess.x = nextTop.first;
+  lastlyChess.y = nextTop.second;
   changePlayer();
 
   return dataTemp;

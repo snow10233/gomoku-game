@@ -20,6 +20,10 @@
 
 - `py -> {RELOAD_MODE} -> cpp`
 - `cpp -> {SUCCESS / INVALID} -> py`
+- `py -> {SUB_MODE} -> cpp`（`AI_MODE` 或 `TWO_PLAYER_MODE`）
+- `py -> {PNG 字串} -> cpp`（與儲存檔第二行相同）
+- `cpp -> {SUCCESS / INVALID} -> py`
+- 成功後進入對應模式的對局進行階段。
 
 ### 2) 對局進行階段 (進入遊戲後)
 
@@ -87,6 +91,10 @@
 
 - `py -> {RELOAD_MODE} -> cpp`
 - `cpp -> {SUCCESS / INVALID} -> py`
+- `py -> {SUB_MODE} -> cpp`（`AI_MODE` 或 `TWO_PLAYER_MODE`）
+- `py -> {PNG 字串} -> cpp`
+- `cpp -> {SUCCESS / INVALID} -> py`
+- 成功後進入對應模式的對局進行階段。
 
 ### 2) 對局進行階段 (進入遊戲後)
 
