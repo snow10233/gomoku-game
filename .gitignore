@@ -8,3 +8,5 @@ venv/
 CMakeSettings.json
 CppProperties.json
 AGENTS.md
+run.bash
+.claude/
