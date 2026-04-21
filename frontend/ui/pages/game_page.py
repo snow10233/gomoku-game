@@ -14,10 +14,16 @@ from ui.components import (
     BattleResult,
 )
 
-
 class GamePage(QWidget):
     # 發射信號給 Main Window，告訴它「我要回首頁」
     request_home = Signal()
+
+    #落子信號
+    place_signal = Signal()
+
+    #  新增勝負信號
+    win_signal = Signal()
+    lose_signal = Signal()
 
     def __init__(self):
         super().__init__()
@@ -161,10 +167,12 @@ class GamePage(QWidget):
 
             if put_result:
                 # AI 模式固定：玩家為黑棋
+                self.place_signal.emit()
                 self.board_widget.board[row][col] = 1
 
                 # 幫 AI 落子
                 if ai_x != -1 and ai_y != -1:  # -1 -1為錯誤代號
+                    self.place_signal.emit()
                     self.board_widget.board[int(ai_y)][int(ai_x)] = 2
 
                 # 顯示與預覽維持玩家黑棋回合
@@ -187,6 +195,7 @@ class GamePage(QWidget):
             self.show_battle_result(board_state)
 
             if put_result:
+                self.place_signal.emit()
                 self.board_widget.board[row][col] = self.now_player
 
                 if board_state not in ("BLACK_WIN", "WHITE_WIN", "DRAW", "CONTINUE"):
@@ -289,9 +298,20 @@ class GamePage(QWidget):
         if result == "BLACK_WIN":
             self.timer_label.timer.stop()
             self.overlay.show_result("黑棋獲勝！")
+
+            # 🌟 發射信號：黑棋(玩家)獲勝
+            self.win_signal.emit()
+
         elif result == "WHITE_WIN":
             self.timer_label.timer.stop()
             self.overlay.show_result("白棋獲勝！")
+
+            # 🌟 發射信號：判斷是 AI 贏還是雙人對戰
+            if self.engine.mode == "AI_MODE":
+                self.lose_signal.emit() # 玩家輸給 AI 了
+            else:
+                self.win_signal.emit()  # 雙人對戰，還是播歡樂的勝利音效
+            
         elif result == "DRAW":
             self.timer_label.timer.stop()
             self.overlay.show_result("平局！")
