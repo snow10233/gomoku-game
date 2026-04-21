@@ -1,6 +1,5 @@
-
-cd ~/code/gomoku-game/backend/build/
+cd ~/repos/projects/gomoku-game/backend/build/
 make
 
-cd ~/code/gomoku-game/frontend/
-python3 main.py
+cd ~/repos/projects/gomoku-game/frontend/
+.venv/bin/python3 main.py
