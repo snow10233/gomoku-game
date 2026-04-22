@@ -100,13 +100,14 @@ class AudioManager(QObject):
         self.current_bgm_key = name
         print(f"🎵 開始切換 BGM: {name}")
 
-    def stop_bgm(self, fade_ms=2500):
-        """淡出當前 BGM 並停下，例如勝負揭曉時讓給勝負音效"""
+    def stop_bgm(self):
+        """直接切掉當前 BGM (例如勝負揭曉時讓給勝負音效)"""
         if self.current_bgm_key is None:
             return
-        self.start_fade_out(self.active_p, fade_ms)
+        self.active_p["output"].setVolume(0)
+        self.active_p["player"].stop()
         self.current_bgm_key = None
-        print("🎵 淡出 BGM")
+        print("🎵 切掉 BGM")
 
     def play_sfx(self, name):
         # 播放音效
@@ -120,7 +121,11 @@ class AudioManager(QObject):
             print(f"找不到音效檔案: {path}")
 
     def start_crossfade(self, old_p, new_p, duration):
-        """音量淡入淡出邏輯"""
+        """舊 BGM 直接切掉，新 BGM 漸入"""
+        if old_p["player"] != new_p["player"]:
+            old_p["output"].setVolume(0)
+            old_p["player"].stop()
+
         steps = 40
         interval = max(10, duration // steps)
         volume_step = 0.5 / steps  # 最終目標音量 0.5
@@ -130,40 +135,9 @@ class AudioManager(QObject):
 
         def update_fade():
             self.fade_count += 1
-            # 舊的淡出
-            old_p["output"].setVolume(max(0, old_p["output"].volume() - volume_step))
-            # 新的淡入
             new_p["output"].setVolume(min(0.5, new_p["output"].volume() + volume_step))
-
             if self.fade_count >= steps:
                 self.fade_timer.stop()
-                if old_p["player"] != new_p["player"]:  # 停止舊的播放
-                    old_p["player"].stop()
 
         self.fade_timer.timeout.connect(update_fade)
         self.fade_timer.start(interval)
-
-    def start_fade_out(self, target_p, duration):
-        """單向淡出：淡完後停掉指定播放器，不切到新音樂"""
-        steps = 40
-        interval = max(10, duration // steps)
-        start_volume = target_p["output"].volume()
-        if start_volume <= 0:
-            target_p["player"].stop()
-            return
-        volume_step = start_volume / steps
-
-        self.fade_out_timer = QTimer()
-        self.fade_out_count = 0
-
-        def update_fade_out():
-            self.fade_out_count += 1
-            target_p["output"].setVolume(
-                max(0, target_p["output"].volume() - volume_step)
-            )
-            if self.fade_out_count >= steps:
-                self.fade_out_timer.stop()
-                target_p["player"].stop()
-
-        self.fade_out_timer.timeout.connect(update_fade_out)
-        self.fade_out_timer.start(interval)
