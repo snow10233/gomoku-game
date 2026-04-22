@@ -1,11 +1,13 @@
 import os
-from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
+from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput, QMediaDevices
 from PySide6.QtCore import QUrl, QObject, QTimer
 
 
 class AudioManager(QObject):
     def __init__(self):
         super().__init__()
+
+        self._log_startup_env()
 
         # --- BGM 播放器 (雙播放器架構，用於淡入淡出) ---
         self.p1 = {"player": QMediaPlayer(), "output": QAudioOutput()}
@@ -34,14 +36,44 @@ class AudioManager(QObject):
         }
 
         print(f"載入選單音樂: {self.songs['menu']}")
-        # 錯誤監控
-        self.p1["player"].errorOccurred.connect(
-            lambda e, m: print(f"BGM_P1 Error: {m}")
+        self._wire_player_logging("BGM_P1", self.p1["player"], self.p1["output"])
+        self._wire_player_logging("BGM_P2", self.p2["player"], self.p2["output"])
+        self._wire_player_logging("SFX", self.sfx_player, self.sfx_output)
+
+    def _log_startup_env(self):
+        """啟動期音訊環境快照：env vars + Qt 看到的輸出裝置。"""
+        env_keys = ("PULSE_SERVER", "XDG_RUNTIME_DIR", "WAYLAND_DISPLAY", "DISPLAY")
+        env_snap = ", ".join(f"{k}={os.environ.get(k) or '<unset>'}" for k in env_keys)
+        print(f"[AUDIO_ENV] {env_snap}")
+
+        outputs = QMediaDevices.audioOutputs()
+        default = QMediaDevices.defaultAudioOutput()
+        print(f"[AUDIO_ENV] Qt audio outputs: {len(outputs)}")
+        for d in outputs:
+            mark = " (default)" if d.id() == default.id() else ""
+            print(f"[AUDIO_ENV]   - {d.description()!r}{mark}")
+        if not outputs:
+            print("[AUDIO_ENV]   (無輸出裝置，音訊將無聲)")
+
+    def _wire_player_logging(self, tag, player, audio_output):
+        """接上播放器/輸出裝置的狀態 signal，方便診斷 WSLg 斷線等問題。"""
+        player.mediaStatusChanged.connect(
+            lambda s: print(f"[{tag}] mediaStatus: {s.name}")
         )
-        self.p2["player"].errorOccurred.connect(
-            lambda e, m: print(f"BGM_P2 Error: {m}")
+        player.playbackStateChanged.connect(
+            lambda s: print(f"[{tag}] playbackState: {s.name}")
         )
-        self.sfx_player.errorOccurred.connect(lambda e, m: print(f"SFX Error: {m}"))
+        player.sourceChanged.connect(
+            lambda u: print(f"[{tag}] source: {u.toString()}")
+        )
+        player.errorOccurred.connect(
+            lambda e, m: print(f"[{tag}] Error[{e.name}]: {m}")
+        )
+        audio_output.deviceChanged.connect(
+            lambda: print(
+                f"[{tag}] device -> {audio_output.device().description()!r}"
+            )
+        )
 
     def play_bgm(self, name, fade_ms=1000):
         """播放背景音樂 (支援不中斷檢查與淡入淡出)"""

@@ -91,3 +91,20 @@ Tokens: `<col-letter><row-number>` where `A..O` = column `0..14`. `OT` is the ti
 - `docs/save-format.md` — `.gmk` token grammar
 - `docs/roadmap.md` — feature progress checklist
 - `docs/getting-started.md`, `docs/development.md`, `docs/troubleshooting.md` — setup / WSL font notes
+
+## TODO / Known Gaps
+
+Outstanding roadmap work (see `docs/roadmap.md` for scoring context):
+
+- **Network multiplayer (`MultiRemotePage`)**: explicitly deferred — "建立房間" / "加入房間" still route through `WipDialog`. No socket layer, no remote protocol.
+
+Recently resolved (so don't re-report as bugs):
+- `GameManager::takeBack()` now handles OT placeholders by swapping player and recursing to pop the real previous stone.
+- `MultiGamePage.handle_undo` now swaps the active player after a single-stone undo.
+- `GomokuEngine.save()` now reads both mode line and replay line (previously only read one, leaving the other in the pipe).
+- `RELOAD_MODE` is fully implemented on both sides; save/load via `.gmk` files works through `GamePage.handle_save` / `MainWindow._load_game_file`.
+- **Audio SFX wiring** complete: `place.wav`/`victory.mp3`/`fail.mp3` registered in `AudioManager.songs`; `place_signal`/`win_signal`/`lose_signal` on `GamePage` drive `play_sfx`. AI mode emits one place sound per round (player + AI combined); local multi emits per move and plays victory for either colour. No game-start sound by design.
+- **Replay button** now routes `HomePage.btn_replay` through `request_replay` → `Route.REPLAY`; `ReplayPage` talks directly to files and implements prev/next via its own stacks.
+- **Dead files removed**: `choose_mode_page.py`, `multi/multi_local_page.py`.
+- **README typo** fixed.
+- **Ctrl+C shutdown**: `HomePage` has a `Ctrl+C` `QShortcut` emitting `request_quit`, wired to `MainWindow.close`. `MainWindow.closeEvent` terminates both game-page engines. A terminal `SIGINT` handler + 200ms `QTimer` pump also closes the app from the shell, so a stuck backend after a bad `.gmk` load can always be torn down.

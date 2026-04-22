@@ -4,13 +4,16 @@ from PySide6.QtWidgets import (
     QLabel,
 )
 from PySide6.QtCore import Qt, Signal
-from ui.components import MenuButton, WipDialog
+from PySide6.QtGui import QKeySequence, QShortcut
+from ui.components import MenuButton
 
 
 class HomePage(QWidget):
     # 定義自訂信號，用來告訴 main.py "玩家想進入單人遊戲了！"
     request_single_player = Signal()
     request_multi_player = Signal()
+    request_replay = Signal()
+    request_quit = Signal()
 
     def __init__(self):
         super().__init__()
@@ -55,9 +58,9 @@ class HomePage(QWidget):
 
         # 綁定按鈕事件
         self.btn_single.clicked.connect(self.request_single_player.emit)
-        self.btn_multi.clicked.connect(self.request_multi_player.emit)  # 暫未開放
-        self.btn_replay.clicked.connect(self.show_wip)  # 暫未開放
+        self.btn_multi.clicked.connect(self.request_multi_player.emit)
+        self.btn_replay.clicked.connect(self.request_replay.emit)
 
-    def show_wip(self):
-        dialog = WipDialog(self)
-        dialog.exec()
+        # Ctrl+C 從主選單直接關閉整個應用 (避免後端卡住佔用)
+        quit_shortcut = QShortcut(QKeySequence("Ctrl+C"), self)
+        quit_shortcut.activated.connect(self.request_quit.emit)

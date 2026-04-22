@@ -34,6 +34,7 @@ class MultiGamePage(GamePage):
             print("本地雙人落子失敗")
             return
 
+        self.place_signal.emit()
         self.board_widget.board[row][col] = self.now_player
 
         # 只有遊戲繼續進行才切換玩家重置計時器
