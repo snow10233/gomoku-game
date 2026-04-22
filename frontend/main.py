@@ -19,6 +19,7 @@ from ui.pages import (
 from assets.audio.audio_manager import AudioManager
 from ui.components import AlertDialog
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -58,7 +59,7 @@ class MainWindow(QMainWindow):
         self.router.register(Route.REPLAY, self.replay_page)
         self.router.go(Route.HOME)
 
-        #2. 啟動首頁音樂
+        # 2. 啟動首頁音樂
         self.audio.play_bgm("menu")
 
         # 🌟 綁定所有的頁面跳轉邏輯
@@ -155,7 +156,7 @@ class MainWindow(QMainWindow):
         self.router.go(Route.SINGLE_GAME)
 
         self.audio.play_bgm("play")
-        
+
         undo_enable = self.single_new_page.btn_undo_enable
         timer_enable = self.single_new_page.btn_timer_enable
         reset_enable = self.single_new_page.btn_reset_enable
@@ -203,15 +204,13 @@ class MainWindow(QMainWindow):
             file_label = mode_label.get(sub_mode, sub_mode)
             entry_label = mode_label.get(expected_mode, expected_mode)
             AlertDialog(
-                f"棋局檔模式不符！\n檔案為 {file_label}，無法在{entry_label}入口載入。",
+                f"棋局檔模式不符！",
                 self,
             ).exec()
             return
 
         target_page = (
-            self.single_game_page
-            if sub_mode == "AI_MODE"
-            else self.multi_game_page
+            self.single_game_page if sub_mode == "AI_MODE" else self.multi_game_page
         )
 
         if sub_mode == "AI_MODE":
