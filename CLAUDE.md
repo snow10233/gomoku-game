@@ -96,18 +96,15 @@ Tokens: `<col-letter><row-number>` where `A..O` = column `0..14`. `OT` is the ti
 
 Outstanding roadmap work (see `docs/roadmap.md` for scoring context):
 
-- **Audio SFX wiring**: `AudioManager` has BGM crossfade working, but `soundeffect/place.wav`, `victory.mp3`, `fail.mp3` are **not yet registered in `AudioManager.songs`** and `play_sfx` is never called. Planned triggers:
-  - Placement sound: AI mode plays once per round (after AI also moves); local multi plays on every move.
-  - Victory: AI mode only when BLACK wins; local multi plays on any winner (label still shows who won).
-  - Defeat: AI mode only when BLACK loses; local multi doesn't play defeat.
-  - No "game start" sound.
 - **Network multiplayer (`MultiRemotePage`)**: explicitly deferred — "建立房間" / "加入房間" still route through `WipDialog`. No socket layer, no remote protocol.
-- **Replay button hookup**: `HomePage.btn_replay` still calls `show_wip()`; needs to route to `ReplayPage` via a new `request_replay` signal wired in `main.py`.
-- **Dead files to clean when convenient**: `frontend/ui/pages/choose_mode_page.py` and `frontend/ui/pages/multi/multi_local_page.py` are empty and unimported.
-- **README typo**: `pip install -r requirement.txt` should be `requirements.txt`.
 
 Recently resolved (so don't re-report as bugs):
 - `GameManager::takeBack()` now handles OT placeholders by swapping player and recursing to pop the real previous stone.
 - `MultiGamePage.handle_undo` now swaps the active player after a single-stone undo.
 - `GomokuEngine.save()` now reads both mode line and replay line (previously only read one, leaving the other in the pipe).
 - `RELOAD_MODE` is fully implemented on both sides; save/load via `.gmk` files works through `GamePage.handle_save` / `MainWindow._load_game_file`.
+- **Audio SFX wiring** complete: `place.wav`/`victory.mp3`/`fail.mp3` registered in `AudioManager.songs`; `place_signal`/`win_signal`/`lose_signal` on `GamePage` drive `play_sfx`. AI mode emits one place sound per round (player + AI combined); local multi emits per move and plays victory for either colour. No game-start sound by design.
+- **Replay button** now routes `HomePage.btn_replay` through `request_replay` → `Route.REPLAY`; `ReplayPage` talks directly to files and implements prev/next via its own stacks.
+- **Dead files removed**: `choose_mode_page.py`, `multi/multi_local_page.py`.
+- **README typo** fixed.
+- **Ctrl+C shutdown**: `HomePage` has a `Ctrl+C` `QShortcut` emitting `request_quit`, wired to `MainWindow.close`. `MainWindow.closeEvent` terminates both game-page engines. A terminal `SIGINT` handler + 200ms `QTimer` pump also closes the app from the shell, so a stuck backend after a bad `.gmk` load can always be torn down.
