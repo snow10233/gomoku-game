@@ -106,6 +106,8 @@ class GamePage(QWidget):
         self.overlay.request_save.connect(self.handle_save)
         self.overlay.request_copy.connect(self.handle_copy_replay)
 
+        self._game_ended = False
+
     def switch_player(self):
         """切換玩家並更新標題"""
         if self.now_player == 1:
@@ -248,6 +250,7 @@ class GamePage(QWidget):
 
         success = self.engine.reset()
         if success:
+            self._game_ended = False
             self.board_widget.board = [[0 for _ in range(15)] for _ in range(15)]
             self.now_player = 1
             self.player_title.setText("黑棋回合")
@@ -257,9 +260,23 @@ class GamePage(QWidget):
         else:
             print(f"C++重置失敗")
 
+    def _apply_switches(self, undo_enable, timer_enable, reset_enable):
+        """依三顆功能開關設定按鈕顯示與計時器狀態，並記住供 SAVE 使用。"""
+        self._undo_enable = undo_enable
+        self._timer_enable = timer_enable
+        self._reset_enable = reset_enable
+
+        self.btn_undo.setVisible(undo_enable)
+        self.btn_reset.setVisible(reset_enable)
+        self.timer_label.setVisible(timer_enable)
+        self.timer_label.switch(timer_enable)
+        if timer_enable:
+            self.timer_label.start_timer()
+
     def start_game(self, undo_enable, timer_enable, reset_enable):
         """當從首頁切換過來時，呼叫這個來初始化 (AI 模式)"""
         self.overlay.hide()
+        self._game_ended = False
         # 告訴 C++ 我們要開始新遊戲了，讓它做好準備
         success = self.engine.ai_mode()
         if success:
@@ -270,26 +287,7 @@ class GamePage(QWidget):
             self.board_widget.set_preview_player(1)
             self.board_widget.update()
 
-            # 悔棋按鈕的顯示與否
-            if not undo_enable:
-                self.btn_undo.setVisible(False)
-            else:
-                self.btn_undo.setVisible(True)
-
-            # 計時器的顯示和啟動
-            if not timer_enable:
-                self.timer_label.setVisible(False)
-                self.timer_label.switch(False)
-            else:
-                self.timer_label.setVisible(True)
-                self.timer_label.switch(True)
-                self.timer_label.start_timer()
-
-            # 重置按鈕的顯示與否
-            if not reset_enable:
-                self.btn_reset.setVisible(False)
-            else:
-                self.btn_reset.setVisible(True)
+            self._apply_switches(undo_enable, timer_enable, reset_enable)
         else:
             print(f"C++切換失敗")
 
@@ -318,9 +316,18 @@ class GamePage(QWidget):
         if not file_path.endswith(".gmk"):
             file_path += ".gmk"
 
+        if self._game_ended:
+            mode_line = f"{mode} ENDING"
+        else:
+            flags = " ".join(
+                "ON" if v else "OFF"
+                for v in (self._undo_enable, self._timer_enable, self._reset_enable)
+            )
+            mode_line = f"{mode} {flags}"
+
         try:
             with open(file_path, "w", encoding="utf-8") as f:
-                f.write(f"{mode}\n{board_state}\n")
+                f.write(f"{mode_line}\n{board_state}\n")
         except OSError as err:
             AlertDialog(f"寫入失敗：{err}", self).exec()
             return
@@ -337,9 +344,12 @@ class GamePage(QWidget):
         QApplication.clipboard().setText(board_state)
         AlertDialog("棋譜已複製到剪貼簿！", self).exec()
 
-    def resume_from_replay(self, sub_mode, replay):
+    def resume_from_replay(
+        self, sub_mode, replay, undo_enable=True, timer_enable=True, reset_enable=True
+    ):
         """從儲存檔載入：交棒給後端 RELOAD_MODE 並把棋盤重現到畫面上。"""
         self.overlay.hide()
+        self._game_ended = False
         if not self.engine.reload_mode(sub_mode, replay):
             AlertDialog("載入失敗！", self).exec()
             self.request_home.emit()
@@ -370,13 +380,7 @@ class GamePage(QWidget):
         self.board_widget.set_preview_player(self.now_player)
         self.board_widget.update()
 
-        # 功能按鈕：載入流程保持全開
-        self.btn_undo.setVisible(True)
-        self.btn_reset.setVisible(True)
-        self.btn_save.setVisible(True)
-        self.timer_label.setVisible(True)
-        self.timer_label.switch(True)
-        self.timer_label.start_timer()
+        self._apply_switches(undo_enable, timer_enable, reset_enable)
 
     @staticmethod
     def _parse_replay(replay):
@@ -396,6 +400,7 @@ class GamePage(QWidget):
     def show_battle_result(self, result):
         """顯示勝負結果的覆蓋層"""
         if result == "BLACK_WIN":
+            self._game_ended = True
             self.timer_label.timer.stop()
             self.overlay.show_result("黑棋獲勝！")
 
@@ -403,6 +408,7 @@ class GamePage(QWidget):
             self.win_signal.emit()
 
         elif result == "WHITE_WIN":
+            self._game_ended = True
             self.timer_label.timer.stop()
             self.overlay.show_result("白棋獲勝！")
 
@@ -411,8 +417,9 @@ class GamePage(QWidget):
                 self.lose_signal.emit() # 玩家輸給 AI 了
             else:
                 self.win_signal.emit()  # 雙人對戰，還是播歡樂的勝利音效
-            
+
         elif result == "DRAW":
+            self._game_ended = True
             self.timer_label.timer.stop()
             self.overlay.show_result("平局！")
 

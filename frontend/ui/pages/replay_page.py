@@ -97,12 +97,14 @@ class ReplayPage(QWidget):
 
         try:
             with open(file_path, "r", encoding="utf-8") as f:
-                sub_mode = f.readline().strip()
+                header = f.readline().strip()
                 replay = f.readline().strip()
         except OSError as err:
             AlertDialog(f"讀取失敗：{err}", self).exec()
             return
 
+        tokens = header.split()
+        sub_mode = tokens[0] if tokens else ""
         if sub_mode not in ("AI_MODE", "TWO_PLAYER_MODE"):
             AlertDialog("檔案格式無效", self).exec()
             return
