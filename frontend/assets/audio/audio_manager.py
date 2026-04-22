@@ -75,7 +75,7 @@ class AudioManager(QObject):
             )
         )
 
-    def play_bgm(self, name, fade_ms=1000):
+    def play_bgm(self, name, fade_ms=2500):
         """播放背景音樂 (支援不中斷檢查與淡入淡出)"""
         if name == self.current_bgm_key:
             return  # 如果正在播同一首歌，直接跳過 (這就是選單間不中斷的秘訣)
@@ -100,6 +100,14 @@ class AudioManager(QObject):
         self.current_bgm_key = name
         print(f"🎵 開始切換 BGM: {name}")
 
+    def stop_bgm(self, fade_ms=2500):
+        """淡出當前 BGM 並停下，例如勝負揭曉時讓給勝負音效"""
+        if self.current_bgm_key is None:
+            return
+        self.start_fade_out(self.active_p, fade_ms)
+        self.current_bgm_key = None
+        print("🎵 淡出 BGM")
+
     def play_sfx(self, name):
         # 播放音效
         path = os.path.abspath(self.songs.get(name, ""))
@@ -113,7 +121,7 @@ class AudioManager(QObject):
 
     def start_crossfade(self, old_p, new_p, duration):
         """音量淡入淡出邏輯"""
-        steps = 20
+        steps = 40
         interval = max(10, duration // steps)
         volume_step = 0.5 / steps  # 最終目標音量 0.5
 
@@ -134,3 +142,28 @@ class AudioManager(QObject):
 
         self.fade_timer.timeout.connect(update_fade)
         self.fade_timer.start(interval)
+
+    def start_fade_out(self, target_p, duration):
+        """單向淡出：淡完後停掉指定播放器，不切到新音樂"""
+        steps = 40
+        interval = max(10, duration // steps)
+        start_volume = target_p["output"].volume()
+        if start_volume <= 0:
+            target_p["player"].stop()
+            return
+        volume_step = start_volume / steps
+
+        self.fade_out_timer = QTimer()
+        self.fade_out_count = 0
+
+        def update_fade_out():
+            self.fade_out_count += 1
+            target_p["output"].setVolume(
+                max(0, target_p["output"].volume() - volume_step)
+            )
+            if self.fade_out_count >= steps:
+                self.fade_out_timer.stop()
+                target_p["player"].stop()
+
+        self.fade_out_timer.timeout.connect(update_fade_out)
+        self.fade_out_timer.start(interval)
