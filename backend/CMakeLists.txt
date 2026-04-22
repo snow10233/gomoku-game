@@ -24,3 +24,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # 5. 將這些原始碼編譯成執行檔，名稱設定為 gomoku
 add_executable(gomoku ${SOURCES})
+
+if(MSVC)
+    target_compile_options(gomoku PRIVATE /utf-8)
+endif()
