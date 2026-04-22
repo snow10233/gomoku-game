@@ -22,7 +22,6 @@ a = Analysis(
     datas=[
         (os.path.join(SPECPATH, "assets", "audio", "backgroundmusic"), "assets/audio/backgroundmusic"),
         (os.path.join(SPECPATH, "assets", "audio", "soundeffect"), "assets/audio/soundeffect"),
-        (os.path.join(SPECPATH, "assets", "pic"), "assets/pic"),
     ],
     hiddenimports=[
         "PySide6.QtMultimedia",
