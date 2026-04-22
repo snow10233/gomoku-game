@@ -17,6 +17,7 @@ from ui.pages import (
     SingleChooseModePage,
 )
 from assets.audio.audio_manager import AudioManager
+from ui.components import AlertDialog
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -168,6 +169,9 @@ class MainWindow(QMainWindow):
 
     def go_to_multi_game_page(self):
         self.router.go(Route.MULTI_GAME)
+
+        self.audio.play_bgm("play")
+
         undo_enable = self.multi_local_new_page.btn_undo_enable
         timer_enable = self.multi_local_new_page.btn_timer_enable
         reset_enable = self.multi_local_new_page.btn_reset_enable
@@ -195,7 +199,13 @@ class MainWindow(QMainWindow):
             return
 
         if sub_mode != expected_mode:
-            print(f"棋局檔模式不符，檔案為 {sub_mode}，此入口為 {expected_mode}")
+            mode_label = {"AI_MODE": "AI 模式", "TWO_PLAYER_MODE": "雙人模式"}
+            file_label = mode_label.get(sub_mode, sub_mode)
+            entry_label = mode_label.get(expected_mode, expected_mode)
+            AlertDialog(
+                f"棋局檔模式不符！\n檔案為 {file_label}，無法在{entry_label}入口載入。",
+                self,
+            ).exec()
             return
 
         target_page = (
@@ -206,9 +216,9 @@ class MainWindow(QMainWindow):
 
         if sub_mode == "AI_MODE":
             self.router.go(Route.SINGLE_GAME)
-            self.audio.play_bgm("play")
         else:
             self.router.go(Route.MULTI_GAME)
+        self.audio.play_bgm("play")
 
         target_page.resume_from_replay(sub_mode, replay)
 
