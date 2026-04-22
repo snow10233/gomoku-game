@@ -1,4 +1,6 @@
+import signal
 import sys
+from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication, QMainWindow, QStackedWidget, QFileDialog
 from settings import WINDOW_WIDTH, WINDOW_HEIGHT
 from ui.navigation import Route, Router
@@ -52,6 +54,7 @@ class MainWindow(QMainWindow):
         self.router.register(Route.MULTI_NEW_GAME, self.multi_local_new_page)
         self.router.register(Route.MULTI_GAME, self.multi_game_page)
         self.router.register(Route.MULTI_REMOTE, self.multi_remote_page)
+        self.router.register(Route.REPLAY, self.replay_page)
         self.router.go(Route.HOME)
 
         #2. 啟動首頁音樂
@@ -60,6 +63,10 @@ class MainWindow(QMainWindow):
         # 🌟 綁定所有的頁面跳轉邏輯
         self.home_page.request_single_player.connect(self.go_to_single_choose_mode_page)
         self.home_page.request_multi_player.connect(self.go_to_multi_choose_mode_page)
+        self.home_page.request_replay.connect(self.go_to_replay_page)
+        self.home_page.request_quit.connect(self.close)
+
+        self.replay_page.request_home.connect(self.go_to_home_page)
 
         self.single_new_page.request_home.connect(self.go_to_home_page)
         self.single_new_page.request_start_game.connect(self.go_to_single_game_page)
@@ -72,6 +79,10 @@ class MainWindow(QMainWindow):
 
         # 綁定落子音效信號
         self.single_game_page.place_signal.connect(lambda: self.audio.play_sfx("place"))
+
+        # 雙人本地：落子每步都播；勝負任一方勝利都播勝利音效
+        self.multi_game_page.place_signal.connect(lambda: self.audio.play_sfx("place"))
+        self.multi_game_page.win_signal.connect(lambda: self.audio.play_sfx("victory"))
 
         self.multi_choose_mode_page.request_local_game.connect(
             self.go_to_multi_local_choose_mode_page
@@ -144,6 +155,9 @@ class MainWindow(QMainWindow):
     def go_to_multi_remote_page(self):
         self.router.go(Route.MULTI_REMOTE)
 
+    def go_to_replay_page(self):
+        self.router.go(Route.REPLAY)
+
     def go_to_multi_game_page(self):
         self.router.go(Route.MULTI_GAME)
         undo_enable = self.multi_local_new_page.btn_undo_enable
@@ -190,9 +204,25 @@ class MainWindow(QMainWindow):
 
         target_page.resume_from_replay(sub_mode, replay)
 
+    def closeEvent(self, event):
+        """關閉主視窗時同步終止所有 C++ 子行程，避免佔用後台。"""
+        for page in (self.single_game_page, self.multi_game_page):
+            engine = getattr(page, "engine", None)
+            if engine is not None:
+                engine.close()
+        super().closeEvent(event)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
+
+    # 讓終端 Ctrl+C (SIGINT) 可乾淨關閉整個應用，避免 C++ 子行程殘留
+    signal.signal(signal.SIGINT, lambda *_: app.quit())
+    # Qt 事件迴圈會阻塞 Python，定期回 Python 以處理 signal
+    signal_pump = QTimer()
+    signal_pump.start(200)
+    signal_pump.timeout.connect(lambda: None)
+
     sys.exit(app.exec())

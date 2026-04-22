@@ -173,13 +173,14 @@ class GamePage(QWidget):
 
             if put_result:
                 # AI 模式固定：玩家為黑棋
-                self.place_signal.emit()
                 self.board_widget.board[row][col] = 1
 
                 # 幫 AI 落子
                 if ai_x != -1 and ai_y != -1:  # -1 -1為錯誤代號
-                    self.place_signal.emit()
                     self.board_widget.board[int(ai_y)][int(ai_x)] = 2
+
+                # Q6': AI 模式玩家 + AI 合起來只播一次落子音效
+                self.place_signal.emit()
 
                 # 顯示與預覽維持玩家黑棋回合
                 self.now_player = 1

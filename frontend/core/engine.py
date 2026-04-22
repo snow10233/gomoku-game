@@ -1,8 +1,29 @@
 import subprocess
+import sys
+import os
+from pathlib import Path
+
+
+def _resolve_engine_path():
+    exe_name = "gomoku.exe" if sys.platform == "win32" else "gomoku"
+    if getattr(sys, "frozen", False):
+        # PyInstaller 打包後：binary 被解壓到 _MEIPASS 根目錄
+        return os.path.join(sys._MEIPASS, exe_name)
+    # 開發環境：從 core/engine.py 往上三層找 backend/build/
+    root = Path(__file__).resolve().parent.parent.parent
+    for candidate in [
+        root / "backend" / "build" / "Release" / exe_name,  # MSVC Release
+        root / "backend" / "build" / exe_name,              # MinGW / Linux
+    ]:
+        if candidate.exists():
+            return str(candidate)
+    return str(root / "backend" / "build" / exe_name)
 
 
 class GomokuEngine:
-    def __init__(self, exe_path="../backend/build/gomoku"):
+    def __init__(self, exe_path=None):
+        if exe_path is None:
+            exe_path = _resolve_engine_path()
         self.mode = None  # AI_MODE, TWO_PLAYER_MODE, 或 RELOAD_MODE
         try:
             # 啟動 C++ 子行程
