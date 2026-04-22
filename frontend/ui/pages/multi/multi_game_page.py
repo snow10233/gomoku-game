@@ -68,6 +68,7 @@ class MultiGamePage(GamePage):
     def start_game(self, undo_enable, timer_enable, reset_enable):
         """切到本地雙人頁時，切換後端模式並重置 UI。"""
         self.overlay.hide()
+        self._game_ended = False
         success = self.engine.two_player_mode()
         if not success:
             print("C++ 切換 TWO_PLAYER_MODE 失敗")
@@ -79,22 +80,4 @@ class MultiGamePage(GamePage):
         self.board_widget.set_preview_player(1)
         self.board_widget.update()
         self.timer_enabled = timer_enable
-
-        if not undo_enable:
-            self.btn_undo.setVisible(False)
-        else:
-            self.btn_undo.setVisible(True)
-
-        if not timer_enable:
-            self.timer_label.setVisible(False)
-            self.timer_label.switch(False)
-            self.timer_label.timer.stop()
-        else:
-            self.timer_label.setVisible(True)
-            self.timer_label.switch(True)
-            self.timer_label.start_timer()
-
-        if not reset_enable:
-            self.btn_reset.setVisible(False)
-        else:
-            self.btn_reset.setVisible(True)
+        self._apply_switches(undo_enable, timer_enable, reset_enable)

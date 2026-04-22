@@ -193,21 +193,33 @@ class MainWindow(QMainWindow):
 
         try:
             with open(file_path, "r", encoding="utf-8") as f:
-                sub_mode = f.readline().strip()
+                header = f.readline().strip()
                 replay = f.readline().strip()
         except OSError as err:
             print(f"讀取棋局檔失敗: {err}")
             return
 
-        if sub_mode != expected_mode:
-            mode_label = {"AI_MODE": "AI 模式", "TWO_PLAYER_MODE": "雙人模式"}
-            file_label = mode_label.get(sub_mode, sub_mode)
-            entry_label = mode_label.get(expected_mode, expected_mode)
-            AlertDialog(
-                f"棋局檔模式不符！",
-                self,
-            ).exec()
+        tokens = header.split()
+        if not tokens:
+            AlertDialog("棋局檔格式錯誤！", self).exec()
             return
+
+        sub_mode = tokens[0]
+        if sub_mode != expected_mode:
+            AlertDialog("棋局檔模式不符！", self).exec()
+            return
+
+        # docs/save-format.md：兩種模式皆帶 3 顆 ON/OFF 開關，或 ENDING。
+        if sub_mode not in ("AI_MODE", "TWO_PLAYER_MODE"):
+            AlertDialog("棋局檔格式錯誤！", self).exec()
+            return
+        if len(tokens) >= 2 and tokens[1] == "ENDING":
+            AlertDialog("此棋局已結束！", self).exec()
+            return
+        if len(tokens) != 4 or any(t not in ("ON", "OFF") for t in tokens[1:4]):
+            AlertDialog("棋局檔格式錯誤！", self).exec()
+            return
+        undo_enable, timer_enable, reset_enable = (t == "ON" for t in tokens[1:4])
 
         target_page = (
             self.single_game_page if sub_mode == "AI_MODE" else self.multi_game_page
@@ -219,7 +231,9 @@ class MainWindow(QMainWindow):
             self.router.go(Route.MULTI_GAME)
         self.audio.play_bgm("play")
 
-        target_page.resume_from_replay(sub_mode, replay)
+        target_page.resume_from_replay(
+            sub_mode, replay, undo_enable, timer_enable, reset_enable
+        )
 
     def closeEvent(self, event):
         """關閉主視窗時同步終止所有 C++ 子行程，避免佔用後台。"""
