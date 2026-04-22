@@ -73,16 +73,16 @@ class MainWindow(QMainWindow):
 
         self.single_game_page.request_home.connect(self.go_to_home_page)  # 遊戲 -> 首頁
 
-        # 🌟 綁定勝負音效信號
-        self.single_game_page.win_signal.connect(lambda: self.audio.play_sfx("victory"))
-        self.single_game_page.lose_signal.connect(lambda: self.audio.play_sfx("defeat"))
+        # 🌟 綁定勝負音效信號：先把 BGM 淡出，讓出聲道給勝負音效
+        self.single_game_page.win_signal.connect(self._on_game_win)
+        self.single_game_page.lose_signal.connect(self._on_game_lose)
 
         # 綁定落子音效信號
         self.single_game_page.place_signal.connect(lambda: self.audio.play_sfx("place"))
 
         # 雙人本地：落子每步都播；勝負任一方勝利都播勝利音效
         self.multi_game_page.place_signal.connect(lambda: self.audio.play_sfx("place"))
-        self.multi_game_page.win_signal.connect(lambda: self.audio.play_sfx("victory"))
+        self.multi_game_page.win_signal.connect(self._on_game_win)
 
         self.multi_choose_mode_page.request_local_game.connect(
             self.go_to_multi_local_choose_mode_page
@@ -114,10 +114,18 @@ class MainWindow(QMainWindow):
         self.single_choose_mode_page.request_load_game.connect(self.load_single_game)
         self.single_choose_mode_page.request_home.connect(self.go_to_home_page)
 
+    def _on_game_win(self):
+        self.audio.stop_bgm()
+        self.audio.play_sfx("victory")
+
+    def _on_game_lose(self):
+        self.audio.stop_bgm()
+        self.audio.play_sfx("defeat")
+
     def go_to_home_page(self):
         print("切換回主選單，發送 {HOME_PAGE}")
 
-        self.audio.play_bgm("menu", fade_ms=1500)
+        self.audio.play_bgm("menu")
 
         current_route = self.router.current_route()
         if current_route == Route.SINGLE_GAME:
@@ -145,7 +153,7 @@ class MainWindow(QMainWindow):
         # print("切換至遊戲畫面，發送 {AI_MODE}")
         self.router.go(Route.SINGLE_GAME)
 
-        self.audio.play_bgm("play", fade_ms=1000)
+        self.audio.play_bgm("play")
         
         undo_enable = self.single_new_page.btn_undo_enable
         timer_enable = self.single_new_page.btn_timer_enable
@@ -198,7 +206,7 @@ class MainWindow(QMainWindow):
 
         if sub_mode == "AI_MODE":
             self.router.go(Route.SINGLE_GAME)
-            self.audio.play_bgm("play", fade_ms=1000)
+            self.audio.play_bgm("play")
         else:
             self.router.go(Route.MULTI_GAME)
 

@@ -180,7 +180,9 @@ class GamePage(QWidget):
                     self.board_widget.board[int(ai_y)][int(ai_x)] = 2
 
                 # Q6': AI 模式玩家 + AI 合起來只播一次落子音效
-                self.place_signal.emit()
+                # 勝負當步把 SFX 留給 victory/defeat，避免 setSource 互蓋
+                if board_state == "CONTINUE":
+                    self.place_signal.emit()
 
                 # 顯示與預覽維持玩家黑棋回合
                 self.now_player = 1
@@ -202,7 +204,8 @@ class GamePage(QWidget):
             self.show_battle_result(board_state)
 
             if put_result:
-                self.place_signal.emit()
+                if board_state == "CONTINUE":
+                    self.place_signal.emit()
                 self.board_widget.board[row][col] = self.now_player
 
                 if board_state not in ("BLACK_WIN", "WHITE_WIN", "DRAW", "CONTINUE"):
