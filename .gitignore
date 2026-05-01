@@ -2,8 +2,7 @@ build/
 .cache/
 .venv/
 __pycache__/
-venv/
-.vs/
+.vscode/
 .cursor/
 CMakeSettings.json
 CppProperties.json
