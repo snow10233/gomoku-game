@@ -1,5 +1,10 @@
 #include "console_ui.h"
 
+/**
+ * @brief 顯示目前輪到哪位玩家（黑子或白子）
+ * 
+ * @param gameManager 遊戲管理器實例，用於獲取當前玩家狀態
+ */
 void CONSOLE_UI::showWhichPlayer(const GameManager &gameManager) {
   if (gameManager.getCurrentPlayer() == ChessPiece::BLACK) {
     std::cout << "目前執棋: 黑子(●)" << std::endl;
@@ -9,6 +14,11 @@ void CONSOLE_UI::showWhichPlayer(const GameManager &gameManager) {
   std::cout << "請輸入位置 (行 列): ";
 }
 
+/**
+ * @brief 清空終端機/控制台畫面
+ * 
+ * 根據編譯的作業系統自動選擇對應的指令 (Windows 使用 cls，類 Unix 使用 clear)。
+ */
 void CONSOLE_UI::clearConsole() {
 #ifdef _WIN32
   system("cls");
@@ -17,6 +27,11 @@ void CONSOLE_UI::clearConsole() {
 #endif
 }
 
+/**
+ * @brief 暫停畫面並等待玩家按下 Enter 鍵
+ * 
+ * 為了避免先前的輸入殘留導致直接跳過，此函式會先清除 cin 狀態與緩衝區。
+ */
 void CONSOLE_UI::pauseConsole() {
   std::cout << "Press Enter key to continue...";
 
@@ -31,6 +46,14 @@ void CONSOLE_UI::pauseConsole() {
   std::cin.get();
 }
 
+/**
+ * @brief 檢查標準輸入 (std::cin) 的狀態是否有效
+ * 
+ * 若 cin 發生錯誤 (例如輸入型態不符)，會重置狀態並清空緩衝區。
+ * 
+ * @return true 輸入狀態正常
+ * @return false 輸入發生錯誤 (已進行復原與清空)
+ */
 bool CONSOLE_UI::isInputValid() {
   if (std::cin.fail()) {
     // 將fail or badbit 恢復成 goodbit
@@ -43,6 +66,13 @@ bool CONSOLE_UI::isInputValid() {
   return true;
 }
 
+/**
+ * @brief 檢查輸入的遊戲模式指令是否合法
+ * 
+ * @param gameMode 從終端機讀入的遊戲模式字串
+ * @return true 字串為合法的遊戲模式指令
+ * @return false 字串非法或讀取失敗
+ */
 bool CONSOLE_UI::isGameModeInputValid(std::string &gameMode) {
   if (!isInputValid()) {
     return false;
@@ -51,6 +81,13 @@ bool CONSOLE_UI::isGameModeInputValid(std::string &gameMode) {
          gameMode == "REVIEW_MODE" || gameMode == "RELOAD_MODE";
 }
 
+/**
+ * @brief 檢查輸入的遊戲操作指令是否合法
+ * 
+ * @param action 從終端機讀入的操作指令字串
+ * @return true 字串為合法的操作指令
+ * @return false 字串非法或讀取失敗
+ */
 bool CONSOLE_UI::isGameActionInputValid(std::string &action) {
   if (!isInputValid()) {
     return false;
