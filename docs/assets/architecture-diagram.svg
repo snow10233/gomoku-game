@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">Gomoku architecture diagram</title>
+  <desc id="desc">Diagram showing the Python PySide6 frontend communicating with the C++ game engine backend through stdin and stdout.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#40566e"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#111827" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="640" fill="#f7f9fc"/>
+
+  <text x="60" y="68" fill="#111827" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="800">Architecture Overview</text>
+  <text x="60" y="102" fill="#526172" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18">The GUI mirrors state for rendering. The C++ engine is the source of truth for rules and results.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="60" y="150" width="420" height="380" rx="18" fill="#ffffff" stroke="#d8e0ea" stroke-width="2"/>
+    <rect x="60" y="150" width="420" height="64" rx="18" fill="#0f766e"/>
+    <text x="88" y="190" fill="#ffffff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">Python PySide6 Frontend</text>
+    <text x="88" y="250" fill="#111827" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="700">Main responsibilities</text>
+    <text x="88" y="288" fill="#334155" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">- QStackedWidget page routing</text>
+    <text x="88" y="318" fill="#334155" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">- Board drawing and hover preview</text>
+    <text x="88" y="348" fill="#334155" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">- Timer, dialogs, save/load UI</text>
+    <text x="88" y="378" fill="#334155" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">- Audio playback</text>
+    <text x="88" y="408" fill="#334155" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">- Child process lifecycle</text>
+    <rect x="88" y="450" width="330" height="44" rx="10" fill="#ecfdf5" stroke="#99f6e4"/>
+    <text x="108" y="478" fill="#0f766e" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">frontend/core/engine.py</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="720" y="150" width="420" height="380" rx="18" fill="#ffffff" stroke="#d8e0ea" stroke-width="2"/>
+    <rect x="720" y="150" width="420" height="64" rx="18" fill="#1d4ed8"/>
+    <text x="748" y="190" fill="#ffffff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">C++17 Game Engine</text>
+    <text x="748" y="250" fill="#111827" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="700">Main responsibilities</text>
+    <text x="748" y="288" fill="#334155" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">- Board and move validation</text>
+    <text x="748" y="318" fill="#334155" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">- Win/draw detection</text>
+    <text x="748" y="348" fill="#334155" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">- Heuristic AI move selection</text>
+    <text x="748" y="378" fill="#334155" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">- Undo stack and OT placeholder</text>
+    <text x="748" y="408" fill="#334155" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">- Save string and reload replay</text>
+    <rect x="748" y="450" width="330" height="44" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="768" y="478" fill="#1d4ed8" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">backend/src/main.cpp</text>
+  </g>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <line x1="484" y1="282" x2="716" y2="282" stroke="#40566e" stroke-width="4" marker-end="url(#arrow)"/>
+    <text x="525" y="258" fill="#111827" font-size="17" font-weight="800">stdin commands</text>
+    <text x="522" y="310" fill="#526172" font-size="15">AI_MODE, PUT_CHESS, SAVE</text>
+
+    <line x1="716" y1="396" x2="484" y2="396" stroke="#40566e" stroke-width="4" marker-end="url(#arrow)"/>
+    <text x="516" y="376" fill="#111827" font-size="17" font-weight="800">stdout responses</text>
+    <text x="520" y="424" fill="#526172" font-size="15">SUCCESS, INVALID, result payload</text>
+  </g>
+
+  <g transform="translate(394 548)" font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect x="0" y="0" width="412" height="50" rx="14" fill="#ffffff" stroke="#d8e0ea"/>
+    <text x="24" y="31" fill="#334155" font-size="16">Save files: mode header + replay tokens in plain-text .gmk files</text>
+  </g>
+</svg>

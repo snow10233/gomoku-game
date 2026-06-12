@@ -1,0 +1,19 @@
+flowchart TD
+  A["Initialize 15x15 board"] --> B["Player clicks an empty coordinate"]
+  B --> C["Python sends PUT_CHESS to C++"]
+  C --> D["Backend validates bounds and occupancy"]
+  D --> E{"Valid move?"}
+  E -- "No" --> F["Return INVALID or failed result"]
+  F --> B
+  E -- "Yes" --> G["Place stone and update move history"]
+  G --> H["Check five-in-a-row or draw"]
+  H --> I{"Game over?"}
+  I -- "Yes" --> J["Return BLACK_WIN, WHITE_WIN, or DRAW"]
+  J --> K["Frontend shows result overlay"]
+  I -- "No, AI mode" --> L["AI scores empty cells and places response"]
+  L --> M["Return CONTINUE plus AI coordinate"]
+  M --> N["Frontend redraws board and resets timer"]
+  N --> B
+  I -- "No, local two-player" --> O["Return CONTINUE"]
+  O --> P["Frontend switches active player"]
+  P --> N

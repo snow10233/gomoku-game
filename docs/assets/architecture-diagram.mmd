@@ -1,0 +1,25 @@
+flowchart LR
+  subgraph Frontend["Python PySide6 Frontend"]
+    MainWindow["MainWindow + Router"]
+    Pages["Game, menu, replay pages"]
+    Components["Board, timer, dialogs, audio"]
+    Engine["GomokuEngine IPC wrapper"]
+  end
+
+  subgraph Backend["C++17 Game Engine"]
+    MainLoop["Mode/action state machine"]
+    GameManager["GameManager"]
+    Board["Board + win/draw checks"]
+    AI["AiPlayer heuristic"]
+    Saver["DataSaver replay stack"]
+  end
+
+  MainWindow --> Pages
+  Pages --> Components
+  Pages --> Engine
+  Engine -- "stdin commands" --> MainLoop
+  MainLoop -- "stdout responses" --> Engine
+  MainLoop --> GameManager
+  GameManager --> Board
+  GameManager --> AI
+  GameManager --> Saver

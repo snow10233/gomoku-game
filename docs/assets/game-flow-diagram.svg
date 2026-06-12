@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">Gomoku game flow diagram</title>
+  <desc id="desc">Flow diagram for initializing a Gomoku board, placing moves, checking results, and continuing or ending the game.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#111827" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="560" fill="#fbfaf7"/>
+  <text x="60" y="64" fill="#111827" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="800">Game Flow</text>
+  <text x="60" y="98" fill="#526172" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18">The C++ engine validates moves and returns the next board result to the Python UI.</text>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif" filter="url(#shadow)">
+    <rect x="70" y="170" width="190" height="82" rx="16" fill="#ffffff" stroke="#d6d3d1" stroke-width="2"/>
+    <text x="104" y="204" fill="#111827" font-size="18" font-weight="800">Initialize</text>
+    <text x="104" y="230" fill="#526172" font-size="15">15x15 board</text>
+
+    <rect x="318" y="170" width="190" height="82" rx="16" fill="#ffffff" stroke="#d6d3d1" stroke-width="2"/>
+    <text x="354" y="204" fill="#111827" font-size="18" font-weight="800">Player Move</text>
+    <text x="354" y="230" fill="#526172" font-size="15">Click coordinate</text>
+
+    <rect x="566" y="170" width="190" height="82" rx="16" fill="#ffffff" stroke="#d6d3d1" stroke-width="2"/>
+    <text x="600" y="204" fill="#111827" font-size="18" font-weight="800">Backend Check</text>
+    <text x="600" y="230" fill="#526172" font-size="15">Validate + place</text>
+
+    <rect x="814" y="170" width="190" height="82" rx="16" fill="#ffffff" stroke="#d6d3d1" stroke-width="2"/>
+    <text x="850" y="204" fill="#111827" font-size="18" font-weight="800">Check Result</text>
+    <text x="850" y="230" fill="#526172" font-size="15">Win, draw, continue</text>
+  </g>
+
+  <g stroke="#475569" stroke-width="4" marker-end="url(#arrow)">
+    <line x1="260" y1="211" x2="314" y2="211"/>
+    <line x1="508" y1="211" x2="562" y2="211"/>
+    <line x1="756" y1="211" x2="810" y2="211"/>
+  </g>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif" filter="url(#shadow)">
+    <path d="M909 300 L1030 372 L909 444 L788 372 Z" fill="#ffffff" stroke="#d6d3d1" stroke-width="2"/>
+    <text x="852" y="366" fill="#111827" font-size="18" font-weight="800">Game Over?</text>
+    <text x="861" y="392" fill="#526172" font-size="15">win or draw</text>
+
+    <rect x="725" y="468" width="368" height="58" rx="16" fill="#ecfdf5" stroke="#99f6e4" stroke-width="2"/>
+    <text x="782" y="503" fill="#0f766e" font-size="18" font-weight="800">Show result overlay and stop timer</text>
+
+    <rect x="338" y="340" width="250" height="74" rx="16" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+    <text x="376" y="372" fill="#1d4ed8" font-size="18" font-weight="800">AI Mode Only</text>
+    <text x="376" y="398" fill="#526172" font-size="15">AI chooses one response move</text>
+
+    <rect x="70" y="340" width="190" height="74" rx="16" fill="#ffffff" stroke="#d6d3d1" stroke-width="2"/>
+    <text x="104" y="372" fill="#111827" font-size="18" font-weight="800">Update UI</text>
+    <text x="104" y="398" fill="#526172" font-size="15">Redraw board</text>
+  </g>
+
+  <g stroke="#475569" stroke-width="4" fill="none" marker-end="url(#arrow)">
+    <path d="M909 252 L909 296"/>
+    <path d="M909 444 L909 464"/>
+    <path d="M788 372 L592 372"/>
+    <path d="M338 377 L264 377"/>
+    <path d="M165 340 L165 278 L413 278 L413 256"/>
+  </g>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800">
+    <text x="928" y="286" fill="#334155">result</text>
+    <text x="934" y="461" fill="#0f766e">yes</text>
+    <text x="682" y="356" fill="#1d4ed8">continue</text>
+  </g>
+</svg>
